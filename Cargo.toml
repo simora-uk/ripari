@@ -4,6 +4,7 @@
 members  = [
     "crates/simora_prompt",
     "crates/simora_formatter",
+    "crates/simora_configuration",
     "crates/simora_glob"
 ]
 resolver = "2"

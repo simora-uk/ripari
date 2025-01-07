@@ -1,0 +1,33 @@
+{
+  "markdown": {
+    "formatter": {
+      "enabled": true,
+      "rules": {
+        "smartQuotes": {
+          "enabled": true
+        },
+        "headings": {
+          "enabled": true,
+          "removeEmphasis": true
+        },
+        "removeHorizontalRules": {
+          "enabled": true
+        },
+        "punctuation": {
+          "enabled": true,
+          "standardizeDashes": true,
+          "standardizeEllipsis": true
+        }
+      }
+    }
+  },
+  "files": {
+    "ignore": ["**/node_modules/**", "**/build/**", "**/dist/**"],
+    "include": ["**/*.md"]
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  }
+}

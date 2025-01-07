@@ -1,4 +1,7 @@
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
+use std::fs;
+use simora_configuration::{PartialMarkdownFormatterConfiguration, Merge};
+use crate::diagnostics::CliDiagnostic;
 
 #[derive(Debug, Default)]
 pub struct Workspace {
@@ -14,6 +17,54 @@ impl Workspace {
 
     pub fn root(&self) -> &PathBuf {
         &self.root
+    }
+
+    /// Find all configuration files from the current directory up to the root
+    /// Returns a list of configurations in order from most specific (current directory)
+    /// to least specific (root directory)
+    pub fn find_configurations(&self) -> Result<Vec<PartialMarkdownFormatterConfiguration>, CliDiagnostic> {
+        let mut configs = Vec::new();
+        let mut current_dir = self.root.canonicalize()
+            .map_err(|e| CliDiagnostic::error(format!("Failed to canonicalize path: {}", e)))?;
+
+        loop {
+            let config_path = current_dir.join("simora.json");
+            if config_path.exists() {
+                let content = fs::read_to_string(&config_path)
+                    .map_err(|e| CliDiagnostic::error(format!("Failed to read config file: {}", e)))?;
+
+                let config: PartialMarkdownFormatterConfiguration = serde_json::from_str(&content)
+                    .map_err(|e| CliDiagnostic::error(format!("Failed to parse config file: {}", e)))?;
+
+                let is_root = config.root;
+                configs.push(config);
+
+                if is_root {
+                    break;
+                }
+            }
+
+            if !current_dir.pop() {
+                break;
+            }
+        }
+
+        Ok(configs)
+    }
+
+    /// Load and merge all configurations from the current directory up to the root
+    pub fn load_merged_configuration(&self) -> Result<PartialMarkdownFormatterConfiguration, CliDiagnostic> {
+        let configs = self.find_configurations()?;
+        if configs.is_empty() {
+            return Ok(PartialMarkdownFormatterConfiguration::default());
+        }
+
+        let mut merged = configs.last().unwrap().clone(); // Start with the most general config
+        for config in configs.iter().rev().skip(1) { // Skip the last one since we started with it
+            merged.merge_with(config.clone());
+        }
+
+        Ok(merged)
     }
 }
 
