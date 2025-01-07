@@ -8,7 +8,7 @@ use std::str::FromStr;
 use crate::console::Console;
 use crate::diagnostics::CliDiagnostic;
 use crate::workspace::Workspace;
-use crate::globby::Glob;
+use simora_glob::Glob;
 
 /// Represents a single formatting rule with its configuration
 #[derive(Debug, Clone)]

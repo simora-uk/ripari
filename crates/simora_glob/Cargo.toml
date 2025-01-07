@@ -1,0 +1,14 @@
+[package]
+name = "simora_glob"
+version = "0.1.0"
+edition = "2021"
+description = "Glob pattern matching for simora-prompt"
+license = "MIT"
+
+[dependencies]
+globset = "0.4.13"
+walkdir = "2.4.0"
+regex = "1.10.2"
+
+[dev-dependencies]
+tempfile = "3.9.0"
