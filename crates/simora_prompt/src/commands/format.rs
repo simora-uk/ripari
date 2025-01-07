@@ -66,6 +66,10 @@ impl LoadEditorConfig for FormatCommand {
 
 impl CommandRunner for FormatCommand {
     fn execute(&self, console: &impl Console, workspace: &Workspace) -> Result<(), CliDiagnostic> {
+        console.log(&format!("Debug: show_help = {}", self.show_help));
+        console.log(&format!("Debug: write = {}", self.write));
+        console.log(&format!("Debug: paths = {:?}", self.paths));
+
         if self.show_help {
             Self::print_help(console);
             return Ok(());
@@ -102,7 +106,7 @@ impl CommandRunner for FormatCommand {
                 let glob = Glob::from_str(&glob_pattern)
                     .map_err(|e| CliDiagnostic::error(format!("Invalid glob pattern: {}", e)))?;
 
-                for entry in walkdir::WalkDir::new(workspace.root()) {
+                for entry in walkdir::WalkDir::new(path) {
                     match entry {
                         Ok(entry) => {
                             let path = entry.path();

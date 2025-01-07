@@ -14,8 +14,108 @@ pub enum SimoraCommand {
 
 impl SimoraCommand {
     pub fn from_args() -> Result<Self, CliDiagnostic> {
-        // TODO: Implement proper argument parsing
-        Ok(SimoraCommand::Format(format::FormatCommand::with_help()))
+        use std::env;
+        use std::ffi::OsString;
+
+        let args: Vec<String> = env::args().collect();
+        println!("Debug: args = {:?}", args);
+
+        if args.len() < 2 {
+            println!("Debug: showing help due to no args");
+            return Ok(SimoraCommand::Format(format::FormatCommand::with_help()));
+        }
+
+        match args[1].as_str() {
+            "format" => {
+                let mut write = false;
+                let mut fix = false;
+                let mut paths = Vec::new();
+                let mut stdin_file_path = None;
+
+                let mut i = 2;
+                while i < args.len() {
+                    println!("Debug: processing arg {}: {:?}", i, args[i]);
+                    match args[i].as_str() {
+                        "--write" => {
+                            println!("Debug: setting write = true");
+                            write = true;
+                        }
+                        "--fix" => {
+                            println!("Debug: setting fix = true");
+                            fix = true;
+                        }
+                        "--stdin-file-path" => {
+                            if i + 1 < args.len() {
+                                println!("Debug: setting stdin_file_path = {:?}", args[i + 1]);
+                                stdin_file_path = Some(args[i + 1].clone());
+                                i += 1;
+                            }
+                        }
+                        "--help" | "-h" => {
+                            println!("Debug: showing help due to help flag");
+                            return Ok(SimoraCommand::Format(format::FormatCommand::with_help()));
+                        }
+                        arg if arg.starts_with("--") => {
+                            println!("Debug: skipping unknown flag: {}", arg);
+                        }
+                        _ => {
+                            println!("Debug: adding path: {:?}", args[i]);
+                            paths.push(OsString::from(&args[i]));
+                        }
+                    }
+                    i += 1;
+                }
+
+                println!("Debug: creating FormatCommand with write={}, fix={}, paths={:?}", write, fix, paths);
+                Ok(SimoraCommand::Format(format::FormatCommand::new(
+                    write,
+                    fix,
+                    paths,
+                    stdin_file_path,
+                )))
+            }
+            "lint" => {
+                let mut write = false;
+                let mut fix = false;
+                let mut paths = Vec::new();
+                let mut stdin_file_path = None;
+
+                let mut i = 2;
+                while i < args.len() {
+                    match args[i].as_str() {
+                        "--write" => write = true,
+                        "--fix" => fix = true,
+                        "--stdin-file-path" => {
+                            if i + 1 < args.len() {
+                                stdin_file_path = Some(args[i + 1].clone());
+                                i += 1;
+                            }
+                        }
+                        arg if arg.starts_with("--") => {
+                            // Skip unknown flags
+                            if arg == "--help" || arg == "-h" {
+                                return Ok(SimoraCommand::Lint(lint::LintCommand::new(
+                                    false,
+                                    false,
+                                    vec![],
+                                    None,
+                                )));
+                            }
+                        }
+                        _ => paths.push(OsString::from(&args[i])),
+                    }
+                    i += 1;
+                }
+
+                Ok(SimoraCommand::Lint(lint::LintCommand::new(
+                    write,
+                    fix,
+                    paths,
+                    stdin_file_path,
+                )))
+            }
+            _ => Ok(SimoraCommand::Format(format::FormatCommand::with_help())),
+        }
     }
 
     pub fn execute(&self, console: &impl Console, workspace: &Workspace) -> Result<(), CliDiagnostic> {

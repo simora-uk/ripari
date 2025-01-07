@@ -11,8 +11,12 @@ pub struct Workspace {
 impl Workspace {
     pub fn new() -> Self {
         Workspace {
-            root: PathBuf::from("."),
+            root: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
         }
+    }
+
+    pub fn default() -> Self {
+        Self::new()
     }
 
     pub fn root(&self) -> &PathBuf {
