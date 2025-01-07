@@ -11,6 +11,10 @@ impl CliDiagnostic {
             message: message.into(),
         }
     }
+
+    pub fn error<T: Into<String>>(message: T) -> Self {
+        Self::new(message)
+    }
 }
 
 impl fmt::Display for CliDiagnostic {

@@ -2,6 +2,7 @@ mod console;
 mod workspace;
 mod commands;
 mod diagnostics;
+mod globby;
 
 use std::process::ExitCode;
 use console::{Console, EnvConsole};

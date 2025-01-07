@@ -1,17 +1,15 @@
 [package]
-authors.workspace    = true
-categories.workspace = true
-description          = "Simora Prompt's command line interface"
-edition.workspace    = true
-homepage.workspace   = true
-keywords.workspace   = true
-license.workspace    = true
-name                 = "simora_prompt_cli"
-publish              = false
-repository.workspace = true
+name                 = "simora_prompt"
 version              = "0.0.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition.workspace    = true
+authors.workspace    = true
+description          = "Simora Prompt's command line interface"
+homepage.workspace   = true
+repository.workspace = true
+license.workspace    = true
+keywords.workspace   = true
+categories.workspace = true
+publish             = false
 
 [[bin]]
 name = "simora-prompt"
@@ -37,6 +35,7 @@ tracing                  = { workspace = true }
 tracing-appender         = "0.2.3"
 tracing-subscriber       = { workspace = true, features = ["env-filter", "json"] }
 tracing-tree             = "0.4.0"
+walkdir                  = "2.4.0"
 
 [target.'cfg(unix)'.dependencies]
 libc  = "0.2.169"
@@ -52,6 +51,7 @@ tikv-jemallocator = "0.6.0"
 insta                = { workspace = true }
 regex                = { workspace = true }
 tokio                = { workspace = true, features = ["io-util"] }
+tempfile             = "3.8.1"
 
 [features]
 docgen            = ["bpaf/docgen"]

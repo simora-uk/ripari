@@ -1,46 +1,68 @@
+## LESSONS LEARNED
+
+You keep making the same mistakes, use these rules:
+- in `.rs` files you MUST semi-colons to end lines.
+
 ## Project Overview
 - **Project Name**: Simora Prompt CLI (simora-prompt)
-- **Purpose**: A command-line interface (CLI) tool for managing and formatting code with modular commands.
+- **Purpose**: A command-line interface (CLI) tool for managing and formatting Markdown files with modular commands.
 
-The **Simora Prompt CLI** application is a modular, extensible command-line interface designed to streamline and manage code formatting, linting, and other project-specific tasks. The application achieves this by providing individual commands encapsulated in a flexible architecture, making it easy to add new functionality or modify existing commands.
+The **Simora Prompt CLI** application is a modular, extensible command-line interface designed to streamline and manage Markdown formatting and linting tasks. The application achieves this by providing individual commands encapsulated in a flexible architecture, making it easy to add new functionality or modify existing commands.
+
+The output for this tool must work on both command-line and via a Visual Studio Code Extension.
+
+The project uses "@biomejs/biome" as the pattern to follow: https://github.com/biomejs/biome/tree/main/crates/biome_cli
+
+
 
 ### Intended Usage
 
-1. **Run Code Formatting**
-   - Command: `simora-prompt format`
-   - **Description**: Formats project files based on predefined or configurable rules.
-   - **Use Case**: Ensures code adheres to consistent styling guidelines across the project.
+All file discovery supports "globbing" described in "docs/globby.md"
+
+1. **Run Markdown Formatting**
+   - Command: `simora-prompt format --write ./src`
+   - **Description**: Formats Markdown files based on predefined rules.
+   - **Use Case**: Ensures Markdown files adhere to consistent styling guidelines across the project.
    - **Example**:
      ```bash
      simora-prompt format --write
      ```
-
-2. **Run Code Linting**
-   - Command: `simora-prompt lint`
-   - **Description**: Analyzes files for potential issues, such as coding errors, unsafe patterns, or stylistic violations.
-   - **Use Case**: Helps maintain code quality and detect errors before deployment.
+2. **Run Markdown Linting (Stubbed)**
+   - Command: `simora-prompt lint --write ./src`
+   - **Description**: Placeholder functionality to demonstrate modularity for analysing Markdown files for potential issues.
+   - **Use Case**: Provides a scaffold for future extensions, such as detecting Markdown structural errors or enforcing additional stylistic rules.
    - **Example**:
      ```bash
-     simora-prompt lint --fix
+     simora-prompt lint
      ```
 
 3. **Command Modularity**
-   - The application uses individual modules (`format.rs`, `lint.rs`) for each command, allowing for:
+   - The application uses individual modules (e.g., `format.rs`, `lint.rs`) for each command, allowing for:
      - Independent logic handling.
      - Clear separation of concerns.
-     - Future extensibility (e.g., adding a `test` or `build` command).
+     - Future extensibility (e.g., adding a `test` or `validate` command).
 
-4. **Configuration Management**
+4. **Formatting Rules**
+Implemented as an extensible set of regexp:
+- each one should have a unique identifier (slug) that can have it's behaviour changed in future
+- modifier can be marked as "safe" or "experimental", "safe" are configured on by default.
+
+Examples:
+   - **Replace Smart Punctuation**: Convert smart quotes and dashes to standard equivalents.
+   - **Clean Up Headings**: Remove bold or italic styling from headings.
+   - **Replace Dashes with Hyphens**: Ensure uniform use of hyphens across Markdown files.
+
+1. **Configuration Management**
    - Relies on a `Workspace` abstraction to handle paths and project-specific settings.
-   - Provides a consistent interface for configuration, making it adaptable to various projects.
+   - Provides a consistent interface for configuration, adaptable to various Markdown projects.
 
-5. **Output and Diagnostics**
-   - Utilizes the `Console` module for logging output to the terminal.
+2. **Output and Diagnostics**
+   - Utilises the `Console` module for logging output to the terminal.
    - Reports errors and feedback consistently via the `diagnostics` module, ensuring a cohesive user experience.
 
-6. **CLI Interface**
+3. **CLI Interface**
    - Arguments and flags are parsed and dispatched via the `commands/mod.rs` dispatcher.
-   - Each command supports additional flags (e.g., `--write` for formatting, `--fix` for linting).
+   - Each command supports additional flags (e.g., `--write` for formatting).
 
 ## Technology
 - **Language**: Rust
@@ -77,4 +99,5 @@ The **Simora Prompt CLI** application is a modular, extensible command-line inte
 
 ## Build & Run
 - **Build**: `cargo build --release`
+- **Install**: `cargo install --path .`
 - **Run**: `./target/release/simora-prompt <command>`
