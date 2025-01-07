@@ -1,0 +1,14 @@
+{
+  "name": "@simora/simora-prompt",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "check:apply": "cargo simora-prompt-cli-dev check --fix --unsafe",
+    "check": "cargo simora-prompt-cli-dev check",
+    "ci": "cargo simora-prompt-cli-dev ci"
+  },
+  "keywords": [],
+  "author": "Simora Developers and Contributors",
+  "license": "MIT OR Apache-2.0",
+  "packageManager": "pnpm@9.15.3"
+}
