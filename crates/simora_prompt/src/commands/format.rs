@@ -66,10 +66,6 @@ impl LoadEditorConfig for FormatCommand {
 
 impl CommandRunner for FormatCommand {
     fn execute(&self, console: &impl Console, workspace: &Workspace) -> Result<(), CliDiagnostic> {
-        console.log(&format!("Debug: show_help = {}", self.show_help));
-        console.log(&format!("Debug: write = {}", self.write));
-        console.log(&format!("Debug: paths = {:?}", self.paths));
-
         if self.show_help {
             Self::print_help(console);
             return Ok(());
