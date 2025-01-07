@@ -20,7 +20,7 @@ impl Workspace {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::Path;
+    // use std::path::Path;
 
     #[test]
     fn test_workspace_default() {

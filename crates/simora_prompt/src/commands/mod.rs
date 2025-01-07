@@ -30,7 +30,7 @@ impl SimoraCommand {
 mod tests {
     use super::*;
     use std::cell::RefCell;
-    use std::ffi::OsString;
+    // use std::ffi::OsString;
 
     struct MockConsole {
         logs: RefCell<Vec<String>>,

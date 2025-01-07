@@ -3,6 +3,7 @@
 # https://doc.rust-lang.org/cargo/reference/resolver.html#resolver-versions
 members  = [
     "crates/simora_prompt",
+    "crates/simora_formatter",
     "crates/simora_glob"
 ]
 resolver = "2"

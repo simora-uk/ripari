@@ -29,9 +29,9 @@ impl Console for EnvConsole {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::Mutex;
+    // use std::sync::Mutex;
     use std::cell::RefCell;
-    use std::rc::Rc;
+    // use std::rc::Rc;
 
     #[derive(Default)]
     struct TestConsole {
