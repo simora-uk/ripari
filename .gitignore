@@ -13,6 +13,7 @@ Profile-*.json
 **/dist
 **/build
 .pnpm-debug.log
+NO_BOTS/
 
 # https://github.com/nnethercote/dhat-rs output file
 dhat-heap.json

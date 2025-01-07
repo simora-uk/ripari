@@ -1,0 +1,80 @@
+## Project Overview
+- **Project Name**: Simora Prompt CLI (simora-prompt)
+- **Purpose**: A command-line interface (CLI) tool for managing and formatting code with modular commands.
+
+The **Simora Prompt CLI** application is a modular, extensible command-line interface designed to streamline and manage code formatting, linting, and other project-specific tasks. The application achieves this by providing individual commands encapsulated in a flexible architecture, making it easy to add new functionality or modify existing commands.
+
+### Intended Usage
+
+1. **Run Code Formatting**
+   - Command: `simora-prompt format`
+   - **Description**: Formats project files based on predefined or configurable rules.
+   - **Use Case**: Ensures code adheres to consistent styling guidelines across the project.
+   - **Example**:
+     ```bash
+     simora-prompt format --write
+     ```
+
+2. **Run Code Linting**
+   - Command: `simora-prompt lint`
+   - **Description**: Analyzes files for potential issues, such as coding errors, unsafe patterns, or stylistic violations.
+   - **Use Case**: Helps maintain code quality and detect errors before deployment.
+   - **Example**:
+     ```bash
+     simora-prompt lint --fix
+     ```
+
+3. **Command Modularity**
+   - The application uses individual modules (`format.rs`, `lint.rs`) for each command, allowing for:
+     - Independent logic handling.
+     - Clear separation of concerns.
+     - Future extensibility (e.g., adding a `test` or `build` command).
+
+4. **Configuration Management**
+   - Relies on a `Workspace` abstraction to handle paths and project-specific settings.
+   - Provides a consistent interface for configuration, making it adaptable to various projects.
+
+5. **Output and Diagnostics**
+   - Utilizes the `Console` module for logging output to the terminal.
+   - Reports errors and feedback consistently via the `diagnostics` module, ensuring a cohesive user experience.
+
+6. **CLI Interface**
+   - Arguments and flags are parsed and dispatched via the `commands/mod.rs` dispatcher.
+   - Each command supports additional flags (e.g., `--write` for formatting, `--fix` for linting).
+
+## Technology
+- **Language**: Rust
+- **Build System**: Cargo
+- **Libraries**: Standard Rust crates and locally emulated functionality for Biome-like modules.
+
+## Project Structure
+- **Root Directory**: `cli/crates/simora_prompt`
+- **Key Modules**:
+  - `main.rs`: Entry point for the CLI.
+  - `commands/mod.rs`: Command dispatcher and integration for CLI commands.
+  - `commands/format.rs`: Handles the `format` command logic.
+  - `commands/lint.rs`: Handles the `lint` command logic.
+  - `console.rs`: Defines the `Console` interface and `EnvConsole` implementation.
+  - `workspace.rs`: Manages project-specific settings and paths.
+  - `diagnostics.rs`: Provides diagnostic utilities.
+
+## Command Execution
+- Each command implements an `execute` method.
+- Commands use the shared `Workspace` and `Console` interfaces.
+
+## Development Guidelines
+- **Commands**:
+  - Place command logic in `src/commands/<command>.rs`.
+  - Export commands in `src/commands/mod.rs`.
+- **Testing**:
+  - Use unit tests within the respective modules.
+- **Error Messaging**:
+  - Centralise errors using `diagnostics.rs`.
+
+## Formatting
+- Follow Rust's `rustfmt` rules.
+- Use `cargo fmt` before commits.
+
+## Build & Run
+- **Build**: `cargo build --release`
+- **Run**: `./target/release/simora-prompt <command>`

@@ -1,29 +1,30 @@
-// src/main.rs
-
-// Declare the commands module to include all the files inside the 'commands' directory.
+mod console;
+mod workspace;
 mod commands;
+mod diagnostics;
 
-use std::env;
-use anyhow::Result;
+use std::process::ExitCode;
+use console::{Console, EnvConsole};
+use workspace::Workspace;
+use commands::SimoraCommand;
+use diagnostics::CliDiagnostic;
 
-fn main() -> Result<()> {
-    // Get the command-line arguments
-    let args: Vec<String> = env::args().collect();
+fn main() -> ExitCode {
+    let mut console = EnvConsole::new(true);
+    let workspace = Workspace::default();
 
-    // Check the second argument to decide which command to run
-    match args.get(1).map(|s| s.as_str()) {
-        Some("format") => {
-            commands::format::execute()?;
-        }
-        Some("lint") => {
-            commands::lint::execute()?;
-        }
-        _ => {
-            println!("Unknown command or no command provided.");
-            println!("Usage: cargo run -- <command>");
-            println!("Available commands: format, lint");
+    match run_workspace(&mut console, &workspace) {
+        Ok(_) => ExitCode::SUCCESS,
+        Err(diagnostic) => {
+            console.error(&diagnostic.to_string());
+            ExitCode::FAILURE
         }
     }
+}
 
+fn run_workspace(console: &mut impl Console, workspace: &Workspace) -> Result<(), CliDiagnostic> {
+    let command = SimoraCommand::from_args()?;
+
+    command.execute(console, workspace)?;
     Ok(())
 }

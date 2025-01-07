@@ -1,12 +1,26 @@
-// src/commands/lint.rs
-use anyhow::Result;  // Import Result from anyhow for error handling
+use std::ffi::OsString;
+use crate::console::Console;
+use crate::workspace::Workspace;
+use crate::diagnostics::CliDiagnostic;
 
-pub fn execute() -> Result<()> {
-    println!("Running the 'lint' command...");
-    // Your linting logic goes here
+#[derive(Debug, Default)]
+pub struct LintCommand {
+    paths: Vec<OsString>,
+    write: bool,
+    fix: bool,
+    stdin_file_path: Option<String>,
+}
 
-    // Example linting logic: just print something
-    println!("Linting completed successfully.");
+impl LintCommand {
+    pub fn new(write: bool, fix: bool, paths: Vec<OsString>, stdin_file_path: Option<String>) -> Self {
+        Self { write, fix, paths, stdin_file_path }
+    }
 
-    Ok(())  // Return Result with Ok(()) to indicate success
+    pub fn execute(&self, console: &impl Console, workspace: &Workspace) -> Result<(), CliDiagnostic> {
+        console.log(&format!(
+            "Linting files in workspace: {:?}",
+            workspace.root()
+        ));
+        Ok(())
+    }
 }
