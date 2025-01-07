@@ -91,4 +91,3 @@ mod tests {
         assert_eq!(console.errors.borrow().join(", "), "error 1, error 2");
     }
 }
-

@@ -6,19 +6,13 @@ use std::str::FromStr;
 use crate::console::Console;
 use crate::diagnostics::CliDiagnostic;
 use crate::workspace::Workspace;
-use simora_glob::Glob;
-use simora_formatter::{Formatter, MarkdownFormatter};
 use simora_configuration::{
-    PartialMarkdownFormatterConfiguration,
-    MarkdownFormatterConfig,
-    RulesConfig,
+    HeadingsConfig, HorizontalRulesConfig, MarkdownFormatterConfig, PartialFilesConfiguration,
+    PartialMarkdownFormatterConfiguration, PartialVcsConfiguration, PunctuationConfig, RulesConfig,
     SmartQuotesConfig,
-    HeadingsConfig,
-    HorizontalRulesConfig,
-    PunctuationConfig,
-    PartialFilesConfiguration,
-    PartialVcsConfiguration,
 };
+use simora_formatter::{Formatter, MarkdownFormatter};
+use simora_glob::Glob;
 
 pub struct FormatCommandPayload {
     pub markdown_formatter: Option<MarkdownFormatterConfig>,
@@ -81,7 +75,8 @@ impl CommandRunner for FormatCommand {
 
         // Create formatter
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&config)
+        formatter
+            .apply_configuration(&config)
             .map_err(|e| CliDiagnostic::error(format!("Failed to apply configuration: {}", e)))?;
 
         // Process files based on VCS configuration if applicable
@@ -125,7 +120,8 @@ impl CommandRunner for FormatCommand {
                 .read_line(&mut buffer)
                 .map_err(|e| CliDiagnostic::error(format!("Failed to read from stdin: {}", e)))?;
 
-            let formatted = formatter.format_content(&buffer)
+            let formatted = formatter
+                .format_content(&buffer)
                 .map_err(|e| CliDiagnostic::error(format!("Failed to format content: {}", e)))?;
             console.log(&formatted);
         }
@@ -136,7 +132,12 @@ impl CommandRunner for FormatCommand {
 }
 
 impl FormatCommand {
-    pub fn new(write: bool, fix: bool, paths: Vec<OsString>, stdin_file_path: Option<String>) -> Self {
+    pub fn new(
+        write: bool,
+        fix: bool,
+        paths: Vec<OsString>,
+        stdin_file_path: Option<String>,
+    ) -> Self {
         Self {
             write,
             fix,
@@ -162,7 +163,12 @@ impl FormatCommand {
         Ok(vec![])
     }
 
-    fn process_file(&self, path: &Path, console: &impl Console, formatter: &MarkdownFormatter) -> Result<(), CliDiagnostic> {
+    fn process_file(
+        &self,
+        path: &Path,
+        console: &impl Console,
+        formatter: &MarkdownFormatter,
+    ) -> Result<(), CliDiagnostic> {
         if !path.exists() {
             return Err(CliDiagnostic::error(format!("File not found: {:?}", path)));
         }
@@ -170,12 +176,14 @@ impl FormatCommand {
         let content = fs::read_to_string(path)
             .map_err(|e| CliDiagnostic::error(format!("Failed to read file {:?}: {}", path, e)))?;
 
-        let formatted = formatter.format_content(&content)
-            .map_err(|e| CliDiagnostic::error(format!("Failed to format file {:?}: {}", path, e)))?;
+        let formatted = formatter.format_content(&content).map_err(|e| {
+            CliDiagnostic::error(format!("Failed to format file {:?}: {}", path, e))
+        })?;
 
         if self.write || self.fix {
-            fs::write(path, formatted)
-                .map_err(|e| CliDiagnostic::error(format!("Failed to write file {:?}: {}", path, e)))?;
+            fs::write(path, formatted).map_err(|e| {
+                CliDiagnostic::error(format!("Failed to write file {:?}: {}", path, e))
+            })?;
             console.log(&format!("Formatted {:?}", path));
         } else {
             console.log(&formatted);
@@ -191,9 +199,11 @@ impl FormatCommand {
         console.log("");
         console.log("Formatting options:");
         console.log("        --write               Write formatted files to disk");
-        console.log("        --fix                 Alias of --write, writes formatted files to disk");
+        console
+            .log("        --fix                 Alias of --write, writes formatted files to disk");
         console.log("        --stdin-file-path=PATH Use this option when you want to format code");
-        console.log("                              piped from stdin, and print the output to stdout");
+        console
+            .log("                              piped from stdin, and print the output to stdout");
         console.log("");
         console.log("Available positional items:");
         console.log("    PATH                      Single file, single path or list of paths");

@@ -1,9 +1,9 @@
 [alias]
-simora-prompt-cli             = "run -p simora-prompt_cli --release --"
-simora-prompt-cli-dev         = "run -p simora-prompt_cli --"
 codegen               = "run -p xtask_codegen --"
 codegen-bindings      = "run -p xtask_codegen --features schema -- bindings"
 codegen-configuration = "run -p xtask_codegen --features configuration -- configuration"
+simora-prompt-cli     = "run -p simora-prompt_cli --release --"
+simora-prompt-cli-dev = "run -p simora-prompt_cli --"
 # updates a newly created crate
 codegen-license = "run -p xtask_codegen --features license -- license"
 codegen-migrate = "run -p xtask_codegen --features configuration -- migrate-eslint"

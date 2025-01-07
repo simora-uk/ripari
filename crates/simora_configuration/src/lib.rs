@@ -87,7 +87,8 @@ impl Merge for PartialMarkdownFormatterConfiguration {
                         current.rules.headings = markdown.rules.headings;
                     }
                     if markdown.rules.remove_horizontal_rules.enabled {
-                        current.rules.remove_horizontal_rules = markdown.rules.remove_horizontal_rules;
+                        current.rules.remove_horizontal_rules =
+                            markdown.rules.remove_horizontal_rules;
                     }
                     if markdown.rules.punctuation.enabled {
                         current.rules.punctuation = markdown.rules.punctuation;
@@ -334,7 +335,8 @@ mod tests {
         };
 
         let serialized = serde_json::to_string_pretty(&config).unwrap();
-        let deserialized: PartialMarkdownFormatterConfiguration = serde_json::from_str(&serialized).unwrap();
+        let deserialized: PartialMarkdownFormatterConfiguration =
+            serde_json::from_str(&serialized).unwrap();
 
         assert_eq!(
             deserialized.markdown.as_ref().unwrap().enabled,

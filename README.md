@@ -1,100 +1,79 @@
+# Simora Prompt CLI
 
+A performant toolchain for managing and formatting Markdown files.
+
+**Simora Prompt** is a performant toolchain for Markdown files, designed to maintain consistent formatting and style across your documentation.
+
+**Simora Prompt** is a [fast formatter](#) for _Markdown_ files that ensures consistent styling and formatting across your documentation. It handles common issues like smart quotes, dashes, and heading styles.
+
+### Installation
+
+```shell
+cargo install simora-prompt
+```
+
+### Usage
+
+```shell
+# Format files
+simora-prompt format --write ./src
+
+# Lint files (coming soon)
+simora-prompt lint --write ./src
+```
+
+## Example Transformations
+
+### Input
 
 ```markdown
 # **Introduction to "Smart" Formatting—A Guide**
 
-## **Don't Use "Quotes" Like This**
-
-Here's a document that shows all the "bad" formatting habits that our tool fixes. It's designed to be a comprehensive example of what not to do—and how it gets fixed.
-
----
-
-### **Let's Talk About "Quotes" and 'Formatting'**
-
 Here's what ChatGPT typically outputs:
 - It uses "smart quotes" everywhere
-- Also uses 'single smart quotes'
-- Don't forget about apostrophes like it's, don't, and won't
+- Also uses 'single quotes'
 - It loves em-dashes—like this—in sentences
-- And sometimes en-dashes–like this–too
-- Not to mention the ellipsis… it loves those…
-
----
-
-#### **Common "Problems" We're Fixing…**
-
-1. Smart quotes in "titles" and 'headings'
-2. The overuse—and misuse—of dashes
-3. Excessive use of… well… ellipsis…
-
----
-
-##### **Here's a Section—With Many Issues**
-
-Let's combine them all:
-- "Smart quotes" with 'single quotes'
-- Mixed with some en-dashes–and em-dashes—in text
-- Don't forget apostrophes
-- And… the… endless… ellipsis…
-
----
-
-###### **Final "Thoughts"—A Summary…**
-
-This document demonstrates everything we're fixing:
-1. Smart quotes ("like this")
-2. Em-dashes (—) and en-dashes (–)
-3. Ellipsis (…)
-4. Unnecessary horizontal rules (---)
-5. Bold (**) in headings
-
----
-
-That's all folks…
 ```
 
-
-...into text like this...
+### Output
 
 ```markdown
 # Introduction to "Smart" Formatting-A Guide
 
-## Don't Use "Quotes" Like This
-
-Here's a document that shows all the "bad" formatting habits that our tool fixes. It's designed to be a comprehensive example of what not to do-and how it gets fixed.
-
-### Let's Talk About "Quotes" and 'Formatting'
-
 Here's what ChatGPT typically outputs:
 - It uses "smart quotes" everywhere
 - Also uses 'single quotes'
-- Don't forget about apostrophes like it's, don't, and won't
 - It loves em-dashes-like this-in sentences
-- And sometimes en-dashes-like this-too
-- Not to mention the ellipsis... it loves those...
-
-#### Common "Problems" We're Fixing...
-
-1. Smart quotes in "titles" and 'headings'
-2. The overuse-and misuse-of dashes
-3. Excessive use of... well... ellipsis...
-
-##### Here's a Section-With Many Issues
-
-Let's combine them all:
-- "Smart quotes" with 'single quotes'
-- Mixed with some en-dashes-and em-dashes-in text
-- Don't forget apostrophes
-- And... the... endless... ellipsis...
-
-###### Final "Thoughts"-A Summary...
-
-This document demonstrates everything we're fixing:
-1. Smart quotes ("like this")
-2. Em-dashes (-) and en-dashes (-)
-3. Ellipsis (...)
-4. Unnecessary horizontal rules
-5. Bold (**) in headings
-
-That's all folks...
 ```
+
+## Features
+
+- **Fast Formatting**: Quickly process Markdown files with consistent styling
+- **Smart Quote Handling**: Converts smart quotes to standard quotes
+- **Dash Normalization**: Standardizes em-dashes and en-dashes
+- **Heading Cleanup**: Removes unnecessary formatting from headers
+- **Glob Pattern Support**: Process multiple files using glob patterns
+
+## Documentation
+
+Check out our documentation to learn more about Simora Prompt:
+
+- [Getting Started](./docs/getting-started.md)
+- [Configuration](./docs/configuration.md)
+- [Glob Pattern Support](./docs/globby.md)
+
+## Project Philosophy
+
+**Simora Prompt** is designed with these principles in mind:
+
+- **Zero Configuration**: Works out of the box with sensible defaults
+- **Extensible**: Modular design allows for easy addition of new features
+- **Performance**: Built in Rust for maximum speed and efficiency
+- **IDE Integration**: First-class support for VS Code and command-line usage
+
+## License
+
+**Simora Prompt** is MIT licensed.
+```
+
+</rewritten_file>

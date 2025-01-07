@@ -1,5 +1,5 @@
 use regex::Regex;
-use simora_configuration::{PartialMarkdownFormatterConfiguration, MarkdownFormatterConfig};
+use simora_configuration::{MarkdownFormatterConfig, PartialMarkdownFormatterConfiguration};
 use std::error::Error;
 use std::fmt;
 
@@ -25,7 +25,10 @@ impl Error for FormatterError {}
 /// Trait for formatters
 pub trait Formatter {
     fn format_content(&self, content: &str) -> Result<String, FormatterError>;
-    fn apply_configuration(&mut self, config: &PartialMarkdownFormatterConfiguration) -> Result<(), FormatterError>;
+    fn apply_configuration(
+        &mut self,
+        config: &PartialMarkdownFormatterConfiguration,
+    ) -> Result<(), FormatterError>;
 }
 
 /// A basic Markdown formatter
@@ -36,9 +39,7 @@ pub struct MarkdownFormatter {
 
 impl Default for MarkdownFormatter {
     fn default() -> Self {
-        Self {
-            config: None,
-        }
+        Self { config: None }
     }
 }
 
@@ -52,10 +53,10 @@ impl MarkdownFormatter {
             if config.rules.smart_quotes.enabled {
                 // Replace smart quotes with straight quotes
                 content
-                    .replace('\u{201c}', "\"")  // Left double quote
-                    .replace('\u{201d}', "\"")  // Right double quote
-                    .replace('\u{2018}', "'")   // Left single quote
-                    .replace('\u{2019}', "'")   // Right single quote
+                    .replace('\u{201c}', "\"") // Left double quote
+                    .replace('\u{201d}', "\"") // Right double quote
+                    .replace('\u{2018}', "'") // Left single quote
+                    .replace('\u{2019}', "'") // Right single quote
             } else {
                 content.to_string()
             }
@@ -68,7 +69,8 @@ impl MarkdownFormatter {
         if let Some(config) = &self.config {
             if config.rules.headings.enabled && config.rules.headings.remove_emphasis {
                 let heading_pattern = Regex::new(r"^(#+)\s+\*\*(.*?)\*\*$").unwrap();
-                let lines: Vec<String> = content.lines()
+                let lines: Vec<String> = content
+                    .lines()
                     .map(|line| {
                         if heading_pattern.is_match(line) {
                             heading_pattern.replace(line, "$1 $2").to_string()
@@ -92,7 +94,11 @@ impl MarkdownFormatter {
                 let hr_pattern = Regex::new(r"(?m)^\s*---\s*$").unwrap();
                 let mut result = Vec::new();
                 let mut prev_was_empty = false;
-                let original_line_ending = if content.contains("\r\n") { "\r\n" } else { "\n" };
+                let original_line_ending = if content.contains("\r\n") {
+                    "\r\n"
+                } else {
+                    "\n"
+                };
                 let lines: Vec<&str> = content.split(original_line_ending).collect();
 
                 // Handle empty content or whitespace-only content
@@ -107,7 +113,11 @@ impl MarkdownFormatter {
                 }
 
                 for (i, line) in lines.iter().enumerate() {
-                    if line.starts_with("```") || line.starts_with("    ") || line.starts_with("\t") || line.starts_with(">") {
+                    if line.starts_with("```")
+                        || line.starts_with("    ")
+                        || line.starts_with("\t")
+                        || line.starts_with(">")
+                    {
                         // Preserve special blocks exactly
                         result.push((*line).to_string());
                         prev_was_empty = false;
@@ -175,7 +185,7 @@ impl MarkdownFormatter {
 
     fn format_content_once(&self, content: &str) -> Result<String, FormatterError> {
         let mut result = Vec::new();
-        let mut in_code_block = false;  // Renamed from in_unformatted_block for clarity
+        let mut in_code_block = false; // Renamed from in_unformatted_block for clarity
         let mut lines = Vec::new();
         let mut current_line = String::new();
 
@@ -280,7 +290,10 @@ impl Formatter for MarkdownFormatter {
         Ok(current)
     }
 
-    fn apply_configuration(&mut self, config: &PartialMarkdownFormatterConfiguration) -> Result<(), FormatterError> {
+    fn apply_configuration(
+        &mut self,
+        config: &PartialMarkdownFormatterConfiguration,
+    ) -> Result<(), FormatterError> {
         self.config = config.markdown.clone();
         Ok(())
     }
@@ -290,8 +303,8 @@ impl Formatter for MarkdownFormatter {
 mod tests {
     use super::*;
     use simora_configuration::{
-        MarkdownFormatterConfig, RulesConfig, SmartQuotesConfig,
-        HeadingsConfig, HorizontalRulesConfig, PunctuationConfig,
+        HeadingsConfig, HorizontalRulesConfig, MarkdownFormatterConfig, PunctuationConfig,
+        RulesConfig, SmartQuotesConfig,
     };
 
     fn create_test_config() -> PartialMarkdownFormatterConfiguration {
@@ -322,7 +335,9 @@ mod tests {
     #[test]
     fn test_smart_quotes_all_variants() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#""double" "double" 'single' 'single'"#;
         let expected = r#""double" "double" 'single' 'single'"#;
@@ -333,7 +348,9 @@ mod tests {
     #[test]
     fn test_smart_quotes_nested() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#""He said 'hello' to me""#;
         let expected = r#""He said 'hello' to me""#;
@@ -344,7 +361,9 @@ mod tests {
     #[test]
     fn test_smart_quotes_apostrophes() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"Don't can't won't it's"#;
         let expected = r#"Don't can't won't it's"#;
@@ -370,7 +389,9 @@ mod tests {
     #[test]
     fn test_headings_all_levels() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "# **H1**\n## **H2**\n### **H3**\n#### **H4**\n##### **H5**\n###### **H6**";
         let expected = "# H1\n## H2\n### H3\n#### H4\n##### H5\n###### H6";
@@ -381,7 +402,9 @@ mod tests {
     #[test]
     fn test_headings_without_emphasis() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "# Plain H1\n## Plain H2";
         let result = formatter.format_content(input).unwrap();
@@ -391,7 +414,9 @@ mod tests {
     #[test]
     fn test_headings_malformed() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "#Not a heading\n##**Bad Space**";
         let result = formatter.format_content(input).unwrap();
@@ -416,7 +441,9 @@ mod tests {
     #[test]
     fn test_horizontal_rules_variants() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let inputs = [
             "Before\n---\nAfter",
@@ -434,7 +461,9 @@ mod tests {
     #[test]
     fn test_horizontal_rules_not_on_own_line() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let inputs = [
             "Text --- more text",
@@ -453,7 +482,9 @@ mod tests {
     #[test]
     fn test_horizontal_rules_consecutive() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Text\n---\n---\n---\nMore text";
         let expected = "Text\n\nMore text";
@@ -464,7 +495,9 @@ mod tests {
     #[test]
     fn test_horizontal_rules_at_boundaries() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "---\nStart text\n---\nEnd text\n---";
         let expected = "\nStart text\n\nEnd text\n";
@@ -476,7 +509,9 @@ mod tests {
     #[test]
     fn test_punctuation_dashes_in_context() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Word—word and word–word";
         let expected = "Word-word and word-word";
@@ -487,7 +522,9 @@ mod tests {
     #[test]
     fn test_punctuation_ellipsis_in_context() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "To be continued… and more…";
         let expected = "To be continued... and more...";
@@ -498,7 +535,9 @@ mod tests {
     #[test]
     fn test_punctuation_mixed() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Start—middle…end–final";
         let expected = "Start-middle...end-final";
@@ -524,7 +563,9 @@ mod tests {
     #[test]
     fn test_empty_content() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let result = formatter.format_content("").unwrap();
         assert_eq!(result, "");
@@ -533,7 +574,9 @@ mod tests {
     #[test]
     fn test_whitespace_only() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "   \n  \t  \n  ";
         let result = formatter.format_content(input).unwrap();
@@ -579,7 +622,9 @@ Word—word…end"#;
     #[test]
     fn test_heading_with_smart_quotes() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"# **Don't "Quote" Me**"#;
         let expected = r#"# Don't "Quote" Me"#;
@@ -590,7 +635,9 @@ Word—word…end"#;
     #[test]
     fn test_heading_with_dashes_and_quotes() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"# **The "Quick"—Brown—Fox**"#;
         let expected = r#"# The "Quick"-Brown-Fox"#;
@@ -601,7 +648,9 @@ Word—word…end"#;
     #[test]
     fn test_heading_with_bold_and_ellipsis() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "# **To Be Continued…**";
         let expected = "# To Be Continued...";
@@ -612,7 +661,9 @@ Word—word…end"#;
     #[test]
     fn test_complex_mixed_content() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"# **Don't "Quote" Me—I'm…**
 
@@ -635,7 +686,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_rule_order_independence() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         // The result should be the same regardless of which characters appear first
         let inputs = [
@@ -677,7 +730,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[ignore]
     fn test_horizontal_rules_in_code_blocks() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Before\n```\n---\n```\nAfter";
         let expected = "Before\n```\n---\n```\nAfter";
@@ -688,7 +743,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_horizontal_rules_in_blockquotes() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Before\n> ---\nAfter";
         let expected = "Before\n> ---\nAfter";
@@ -699,7 +756,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_heading_with_horizontal_rules() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "# **Title**\n---\nContent";
         let expected = "# Title\n\nContent";
@@ -716,7 +775,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[ignore]
     fn test_mixed_line_endings() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Line 1\r\n---\r\nLine 2\nLine 3\r\n---\nLine 4";
         let expected = "Line 1\r\n\r\nLine 2\nLine 3\r\n\r\nLine 4";
@@ -727,7 +788,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_unicode_whitespace() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Before\n\u{2003}---\u{2003}\nAfter"; // Em space
         let expected = "Before\n\nAfter";
@@ -743,7 +806,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_all_rules_interaction() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"# **"Title"**
 ## **Heading—With—Style…**
@@ -792,7 +857,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_empty_document() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "";
         let expected = "";
@@ -803,7 +870,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_only_horizontal_rules() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "---\n---\n---";
         let expected = "";
@@ -814,7 +883,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_punctuation_multiple_on_line() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Text—with—multiple—dashes";
         let expected = "Text-with-multiple-dashes";
@@ -825,7 +896,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_punctuation_multiple_ellipsis() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "First…second…third…";
         let expected = "First...second...third...";
@@ -836,7 +909,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_punctuation_mixed_multiple() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Text—with…mixed—punctuation…marks";
         let expected = "Text-with...mixed-punctuation...marks";
@@ -847,7 +922,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_punctuation_consecutive() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Text——with……consecutive—punctuation";
         let expected = "Text--with......consecutive-punctuation";
@@ -858,7 +935,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_blockquote_state_reset() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"> Some quoted text
 ## **Should remove bold**"#;
@@ -867,13 +946,19 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
 ## Should remove bold"#;
 
         let result = formatter.format_content(input).unwrap();
-        assert_eq!(result, expected, "Failed to reset blockquote state. Actual output:\n{}", result);
+        assert_eq!(
+            result, expected,
+            "Failed to reset blockquote state. Actual output:\n{}",
+            result
+        );
     }
 
     #[test]
     fn test_heading_bold_removal() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "## **Heading with bold**";
         let expected = "## Heading with bold";
@@ -884,7 +969,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_heading_with_quotes() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"## **"Heading with quotes"**"#;
         let expected = r#"## "Heading with quotes""#;
@@ -895,7 +982,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_heading_with_dashes() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "## Heading—With—Dashes";
         let expected = "## Heading-With-Dashes";
@@ -906,7 +995,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_heading_with_ellipsis() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "## Heading with ellipsis…";
         let expected = "## Heading with ellipsis...";
@@ -917,30 +1008,44 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_heading_with_trailing_quote() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"## **"Heading"**""#;
         let expected = r#"## **"Heading"**""#;
         let result = formatter.format_content(input).unwrap();
-        assert_eq!(result, expected, "Failed to format heading with trailing quote.\nActual: {}\nExpected: {}", result, expected);
+        assert_eq!(
+            result, expected,
+            "Failed to format heading with trailing quote.\nActual: {}\nExpected: {}",
+            result, expected
+        );
     }
 
     #[test]
     fn test_heading_with_proper_bold() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = r#"## **"Heading"**"#;
         let expected = r#"## "Heading""#;
 
         let result = formatter.format_content(input).unwrap();
-        assert_eq!(result, expected, "Failed to format heading with proper bold markers.\nActual: {}\nExpected: {}", result, expected);
+        assert_eq!(
+            result, expected,
+            "Failed to format heading with proper bold markers.\nActual: {}\nExpected: {}",
+            result, expected
+        );
     }
 
     #[test]
     fn test_blockquote_preservation() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "> Text with—dashes… and \"quotes\"";
         let expected = "> Text with—dashes… and \"quotes\"";
@@ -951,7 +1056,9 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
     #[test]
     fn test_horizontal_rule_removal() {
         let mut formatter = MarkdownFormatter::new();
-        formatter.apply_configuration(&create_test_config()).unwrap();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
 
         let input = "Text\n---\nMore text";
         let expected = "Text\n\nMore text";
@@ -959,4 +1066,3 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
         assert_eq!(result, expected);
     }
 }
-

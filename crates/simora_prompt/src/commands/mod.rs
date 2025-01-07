@@ -1,7 +1,7 @@
+use crate::commands::format::CommandRunner;
 use crate::console::Console;
 use crate::diagnostics::CliDiagnostic;
 use crate::workspace::Workspace;
-use crate::commands::format::CommandRunner;
 
 pub mod format;
 pub mod lint;
@@ -109,7 +109,11 @@ impl SimoraCommand {
         }
     }
 
-    pub fn execute(&self, console: &impl Console, workspace: &Workspace) -> Result<(), CliDiagnostic> {
+    pub fn execute(
+        &self,
+        console: &impl Console,
+        workspace: &Workspace,
+    ) -> Result<(), CliDiagnostic> {
         match self {
             SimoraCommand::Format(cmd) => cmd.execute(console, workspace),
             SimoraCommand::Lint(cmd) => cmd.execute(console, workspace),

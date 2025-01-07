@@ -1,12 +1,16 @@
 [package]
-name = "simora_prompt"
-version = "0.1.0"
 edition = "2021"
+name    = "simora_prompt"
+version = "0.1.0"
 
 [dependencies]
-regex = "1"
-walkdir = "2"
-serde_json = "1.0"
-simora_glob = { path = "../simora_glob" }
-simora_formatter = { path = "../simora_formatter" }
+regex                = "1"
+serde_json           = "1.0"
 simora_configuration = { path = "../simora_configuration" }
+simora_formatter     = { path = "../simora_formatter" }
+simora_glob          = { path = "../simora_glob" }
+walkdir              = "2"
+
+[[bin]]
+name = "simora-prompt"
+path = "src/main.rs"

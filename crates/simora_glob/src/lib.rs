@@ -1,10 +1,10 @@
+use globset;
+use regex;
+use std::fmt;
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use std::fmt;
 use walkdir;
-use regex;
-use std::fs;
-use globset;
 
 #[derive(Debug, Clone)]
 pub struct Glob {
@@ -90,10 +90,7 @@ impl FromStr for Glob {
                 is_negated,
                 glob: glob.compile_matcher(),
             }),
-            Err(error) => Err(GlobError::new(
-                GlobErrorKind::InvalidGlobStar,
-                None,
-            )),
+            Err(error) => Err(GlobError::new(GlobErrorKind::InvalidGlobStar, None)),
         }
     }
 }
@@ -190,10 +187,7 @@ fn validate_glob(pattern: &str) -> Result<(), GlobError> {
                 // Accept a restrictive set of escape sequences
                 if let Some((_, c)) = it.next() {
                     if !matches!(c, b'!' | b'*' | b'?' | b'{' | b'}' | b'[' | b']' | b'\\') {
-                        return Err(GlobError::new(
-                            GlobErrorKind::InvalidEscape,
-                            Some(i as u32),
-                        ));
+                        return Err(GlobError::new(GlobErrorKind::InvalidEscape, Some(i as u32)));
                     }
                 } else {
                     return Err(GlobError::new(
@@ -230,9 +224,9 @@ fn validate_glob(pattern: &str) -> Result<(), GlobError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::str::FromStr;
     use std::fs;
     use std::path::Path;
+    use std::str::FromStr;
     #[cfg(test)]
     use tempfile::TempDir;
 
@@ -240,35 +234,59 @@ mod tests {
     fn test_validate_glob() {
         assert!(matches!(
             Glob::from_str("*.[jt]s"),
-            Err(GlobError { kind: GlobErrorKind::UnsupportedCharacterClass, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::UnsupportedCharacterClass,
+                ..
+            })
         ));
         assert!(matches!(
             Glob::from_str("?*.js"),
-            Err(GlobError { kind: GlobErrorKind::UnsupportedAnyCharacter, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::UnsupportedAnyCharacter,
+                ..
+            })
         ));
         assert!(matches!(
             Glob::from_str(r"\"),
-            Err(GlobError { kind: GlobErrorKind::DanglingEscape, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::DanglingEscape,
+                ..
+            })
         ));
         assert!(matches!(
             Glob::from_str(r"\n"),
-            Err(GlobError { kind: GlobErrorKind::InvalidEscape, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::InvalidEscape,
+                ..
+            })
         ));
         assert!(matches!(
             Glob::from_str(r"***"),
-            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::InvalidGlobStar,
+                ..
+            })
         ));
         assert!(matches!(
             Glob::from_str(r"a**"),
-            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::InvalidGlobStar,
+                ..
+            })
         ));
         assert!(matches!(
             Glob::from_str(r"**a"),
-            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::InvalidGlobStar,
+                ..
+            })
         ));
         assert!(matches!(
             Glob::from_str(r"**/**"),
-            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+            Err(GlobError {
+                kind: GlobErrorKind::InvalidGlobStar,
+                ..
+            })
         ));
 
         assert!(Glob::from_str("!*.js").is_ok());

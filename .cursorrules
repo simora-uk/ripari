@@ -11,10 +11,6 @@ The **Simora Prompt CLI** application is a modular, extensible command-line inte
 
 The output for this tool must work on both command-line and via a Visual Studio Code Extension.
 
-The project uses "@biomejs/biome" as the pattern to follow: https://github.com/biomejs/biome/tree/main/crates/biome_cli
-
-
-
 ### Intended Usage
 
 All file discovery supports "globbing" described in "docs/globby.md"
@@ -67,7 +63,7 @@ Examples:
 ## Technology
 - **Language**: Rust
 - **Build System**: Cargo
-- **Libraries**: Standard Rust crates and locally emulated functionality for Biome-like modules.
+- **Libraries**: Standard Rust crates
 
 ## Project Structure
 - **Root Directory**: `cli/crates/simora_prompt`

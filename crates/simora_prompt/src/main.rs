@@ -1,13 +1,13 @@
-mod console;
-mod workspace;
 mod commands;
+mod console;
 mod diagnostics;
+mod workspace;
 
-use std::process::ExitCode;
-use console::{Console, EnvConsole};
-use workspace::Workspace;
 use commands::SimoraCommand;
+use console::{Console, EnvConsole};
 use diagnostics::CliDiagnostic;
+use std::process::ExitCode;
+use workspace::Workspace;
 
 fn main() -> ExitCode {
     let mut console = EnvConsole::new(true);

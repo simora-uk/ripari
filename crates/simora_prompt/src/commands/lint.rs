@@ -1,7 +1,7 @@
-use std::ffi::OsString;
 use crate::console::Console;
-use crate::workspace::Workspace;
 use crate::diagnostics::CliDiagnostic;
+use crate::workspace::Workspace;
+use std::ffi::OsString;
 
 #[derive(Debug, Default)]
 pub struct LintCommand {
@@ -12,11 +12,25 @@ pub struct LintCommand {
 }
 
 impl LintCommand {
-    pub fn new(write: bool, fix: bool, paths: Vec<OsString>, stdin_file_path: Option<String>) -> Self {
-        Self { write, fix, paths, stdin_file_path }
+    pub fn new(
+        write: bool,
+        fix: bool,
+        paths: Vec<OsString>,
+        stdin_file_path: Option<String>,
+    ) -> Self {
+        Self {
+            write,
+            fix,
+            paths,
+            stdin_file_path,
+        }
     }
 
-    pub fn execute(&self, console: &impl Console, workspace: &Workspace) -> Result<(), CliDiagnostic> {
+    pub fn execute(
+        &self,
+        console: &impl Console,
+        workspace: &Workspace,
+    ) -> Result<(), CliDiagnostic> {
         console.log(&format!(
             "Linting files in workspace: {:?}",
             workspace.root()
@@ -92,12 +106,7 @@ mod tests {
     #[test]
     fn test_lint_command_with_stdin() {
         let paths = vec![OsString::from("test.md")];
-        let cmd = LintCommand::new(
-            true,
-            false,
-            paths,
-            Some("stdin.md".to_string()),
-        );
+        let cmd = LintCommand::new(true, false, paths, Some("stdin.md".to_string()));
         assert_eq!(cmd.stdin_file_path.unwrap(), "stdin.md");
     }
 }
