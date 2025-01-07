@@ -98,6 +98,19 @@ where
 {
 }
 
+/// Implement Format for Option when the inner type implements Format
+impl<F, Context> Format<Context> for Option<F>
+where
+    F: Format<Context>,
+{
+    fn format(&self, ctx: &Context) -> String {
+        match self {
+            Some(f) => f.format(ctx),
+            None => String::new(),
+        }
+    }
+}
+
 // Re-export common traits
 pub mod prelude {
     pub use super::{AsFormat, Format, FormattedIterExt, IntoFormat};

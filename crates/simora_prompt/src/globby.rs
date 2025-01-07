@@ -3,11 +3,19 @@ use std::str::FromStr;
 use std::fmt;
 use walkdir;
 use regex;
+use std::fs;
+use globset;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct Glob {
-    pattern: String,
     is_negated: bool,
+    glob: globset::GlobMatcher,
+}
+
+impl PartialEq for Glob {
+    fn eq(&self, other: &Self) -> bool {
+        self.is_negated == other.is_negated && self.glob.glob() == other.glob.glob()
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -42,293 +50,237 @@ impl fmt::Display for GlobErrorKind {
     }
 }
 
-impl FromStr for Glob {
-    type Err = String;
+#[derive(Debug)]
+pub struct GlobError {
+    kind: GlobErrorKind,
+    index: Option<u32>,
+}
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Glob::parse(s)
+impl GlobError {
+    fn new(kind: GlobErrorKind, index: Option<u32>) -> Self {
+        Self { kind, index }
+    }
+}
+
+impl std::error::Error for GlobError {}
+
+impl fmt::Display for GlobError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.kind)
+    }
+}
+
+impl FromStr for Glob {
+    type Err = GlobError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        let (is_negated, value) = if let Some(stripped) = value.strip_prefix('!') {
+            (true, stripped)
+        } else {
+            (false, value)
+        };
+        validate_glob(value)?;
+        let mut glob_builder = globset::GlobBuilder::new(value);
+        // Allow escaping with `\` on all platforms
+        glob_builder.backslash_escape(true);
+        // Only `**` can match `/`
+        glob_builder.literal_separator(true);
+        match glob_builder.build() {
+            Ok(glob) => Ok(Glob {
+                is_negated,
+                glob: glob.compile_matcher(),
+            }),
+            Err(error) => Err(GlobError::new(
+                GlobErrorKind::InvalidGlobStar,
+                None,
+            )),
+        }
     }
 }
 
 impl fmt::Display for Glob {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let negation = if self.is_negated { "!" } else { "" };
-        write!(f, "{}{}", negation, self.pattern)
+        write!(f, "{}{}", negation, self.glob.glob())
     }
 }
 
 #[derive(Debug)]
-pub struct GlobMatcher {
-    globs: Vec<Glob>,
-    root: PathBuf,
-}
+pub struct CandidatePath<'a>(globset::Candidate<'a>);
 
-#[derive(Debug)]
-pub struct CandidatePath {
-    path: PathBuf,
-}
-
-impl Glob {
-    pub fn parse(pattern: &str) -> Result<Self, String> {
-        let (pattern, is_negated) = if pattern.starts_with('!') {
-            (pattern[1..].to_string(), true)
-        } else {
-            (pattern.to_string(), false)
-        };
-
-        // Validate glob pattern
-        if pattern.contains('?') {
-            return Err(GlobErrorKind::UnsupportedAnyCharacter.to_string());
-        }
-        if pattern.contains('[') || pattern.contains(']') {
-            return Err(GlobErrorKind::UnsupportedCharacterClass.to_string());
-        }
-        if pattern.contains('{') || pattern.contains('}') {
-            return Err(GlobErrorKind::UnsupportedAlternates.to_string());
-        }
-        if pattern.ends_with('\\') {
-            return Err(GlobErrorKind::DanglingEscape.to_string());
-        }
-        if pattern.contains("**a") || pattern.contains("**/**") || pattern.contains("a**") || pattern == "***" {
-            return Err(GlobErrorKind::InvalidGlobStar.to_string());
-        }
-
-        // Validate escapes
-        let mut chars = pattern.chars().peekable();
-        while let Some(c) = chars.next() {
-            if c == '\\' {
-                match chars.next() {
-                    Some(c) if "!*?{}[]\\".contains(c) => continue,
-                    _ => return Err(GlobErrorKind::InvalidEscape.to_string()),
-                }
-            }
-        }
-
-        Ok(Self {
-            pattern,
-            is_negated,
-        })
-    }
-
-    pub fn is_match<P: AsRef<Path>>(&self, path: P) -> bool {
-        let candidate = CandidatePath::new(path.as_ref());
-        candidate.matches(self)
-    }
-
-    fn is_raw_match<P: AsRef<Path>>(&self, path: P) -> bool {
-        let candidate = CandidatePath::new(path.as_ref());
-        candidate.raw_matches(self)
-    }
-}
-
-impl CandidatePath {
-    pub fn new(path: impl AsRef<Path>) -> Self {
-        Self {
-            path: path.as_ref().to_path_buf(),
-        }
+impl<'a> CandidatePath<'a> {
+    pub fn new(path: &'a impl AsRef<Path>) -> Self {
+        Self(globset::Candidate::new(path))
     }
 
     pub fn matches(&self, glob: &Glob) -> bool {
         self.raw_matches(glob) != glob.is_negated
     }
 
-    fn raw_matches(&self, glob: &Glob) -> bool {
-        let path_str = self.path.to_string_lossy();
-        let pattern = &glob.pattern;
-
-        // Convert glob pattern to regex
-        let regex_pattern = Self::glob_to_regex(pattern);
-
-        match regex::Regex::new(&format!("^{}$", regex_pattern)) {
-            Ok(re) => re.is_match(&path_str),
-            Err(_) => false,
-        }
+    pub fn matches_with_exceptions<'b, I>(&self, globs: I) -> bool
+    where
+        I: IntoIterator<Item = &'b Glob>,
+        I::IntoIter: DoubleEndedIterator,
+    {
+        self.matches_with_exceptions_or(false, globs)
     }
 
-    fn glob_to_regex(pattern: &str) -> String {
-        let mut result = String::new();
-        let mut chars = pattern.chars().peekable();
-        let mut in_escape = false;
-
-        while let Some(c) = chars.next() {
-            if in_escape {
-                result.push_str(&regex::escape(&c.to_string()));
-                in_escape = false;
-                continue;
-            }
-
-            match c {
-                '\\' => {
-                    in_escape = true;
-                }
-                '*' => {
-                    if chars.peek() == Some(&'*') {
-                        chars.next(); // consume the second *
-                        if chars.peek() == Some(&'/') || chars.peek().is_none() {
-                            chars.next(); // consume the slash if present
-                            // Match zero or more path segments, including empty paths
-                            result.push_str("(?:[^/]*/)*[^/]*");
-                        } else {
-                            result.push_str("[^/]*");
-                        }
-                    } else {
-                        result.push_str("[^/]*");
-                    }
-                }
-                '.' => result.push_str("\\."),
-                '?' | '[' | ']' | '{' | '}' => {
-                    result.push('\\');
-                    result.push(c);
-                }
-                '/' => result.push(c),
-                _ => result.push_str(&regex::escape(&c.to_string())),
-            }
-        }
-
-        result
-    }
-
-    pub fn matches_with_exceptions(&self, globs: &[Glob]) -> bool {
-        let mut matched = false;
-
-        // Iterate in reverse order to match reference implementation behavior
-        for glob in globs.iter().rev() {
-            if self.raw_matches(glob) {
-                return !glob.is_negated;
-            }
-        }
-
-        matched
-    }
-
-    pub fn matches_directory_with_exceptions(&self, globs: &[Glob]) -> bool {
-        // Following reference implementation: return true by default unless explicitly negated
+    pub fn matches_directory_with_exceptions<'b, I>(&self, globs: I) -> bool
+    where
+        I: IntoIterator<Item = &'b Glob>,
+        I::IntoIter: DoubleEndedIterator,
+    {
         self.matches_with_exceptions_or(true, globs)
     }
 
-    fn matches_with_exceptions_or(&self, default: bool, globs: &[Glob]) -> bool {
-        // Iterate in reverse order to match reference implementation behavior
-        for glob in globs.iter().rev() {
+    fn matches_with_exceptions_or<'b, I>(&self, default: bool, globs: I) -> bool
+    where
+        I: IntoIterator<Item = &'b Glob>,
+        I::IntoIter: DoubleEndedIterator,
+    {
+        // Iterate in reverse order to avoid unnecessary glob matching
+        for glob in globs.into_iter().rev() {
             if self.raw_matches(glob) {
                 return !glob.is_negated;
             }
         }
         default
     }
-}
 
-impl GlobMatcher {
-    pub fn new(pattern: &str) -> Result<Self, String> {
-        let glob = Glob::parse(pattern)?;
-        Ok(Self {
-            globs: vec![glob],
-            root: PathBuf::from("."),
-        })
-    }
-
-    pub fn with_root(mut self, root: impl AsRef<Path>) -> Self {
-        self.root = root.as_ref().to_path_buf();
-        self
-    }
-
-    pub fn add_pattern(&mut self, pattern: &str) -> Result<(), String> {
-        let glob = Glob::parse(pattern)?;
-        self.globs.push(glob);
-        Ok(())
-    }
-
-    pub fn walk(&self, root: impl AsRef<Path>) -> GlobWalker {
-        GlobWalker {
-            globs: self.globs.clone(),
-            walker: walkdir::WalkDir::new(root).into_iter(),
-        }
+    fn raw_matches(&self, glob: &Glob) -> bool {
+        glob.glob.is_match_candidate(&self.0)
     }
 }
 
-pub struct GlobWalker {
-    globs: Vec<Glob>,
-    walker: walkdir::IntoIter,
+impl Glob {
+    pub fn is_negated(&self) -> bool {
+        self.is_negated
+    }
+
+    pub fn is_match(&self, path: impl AsRef<Path>) -> bool {
+        self.is_raw_match(path) != self.is_negated
+    }
+
+    fn is_raw_match(&self, path: impl AsRef<Path>) -> bool {
+        self.glob.is_match(path)
+    }
 }
 
-impl Iterator for GlobWalker {
-    type Item = Result<walkdir::DirEntry, walkdir::Error>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        loop {
-            match self.walker.next()? {
-                Ok(entry) => {
-                    let _path_str = entry.path().to_string_lossy();
-                    let candidate = CandidatePath::new(entry.path());
-                    if entry.file_type().is_dir() {
-                        if !candidate.matches_directory_with_exceptions(&self.globs) {
-                            self.walker.skip_current_dir();
-                        }
-                        continue;
+fn validate_glob(pattern: &str) -> Result<(), GlobError> {
+    let mut it = pattern.bytes().enumerate();
+    let mut allow_globstar = true;
+    while let Some((i, c)) = it.next() {
+        match c {
+            b'*' => {
+                let mut lookahead = it.clone();
+                if matches!(lookahead.next(), Some((_, b'*'))) {
+                    if !allow_globstar || !matches!(lookahead.next(), None | Some((_, b'/'))) {
+                        return Err(GlobError::new(
+                            GlobErrorKind::InvalidGlobStar,
+                            Some(i as u32),
+                        ));
                     }
-                    if candidate.matches_with_exceptions(&self.globs) {
-                        return Some(Ok(entry));
-                    }
+                    // Eat `*`
+                    it.next();
+                    // Eat `/`
+                    it.next();
                 }
-                Err(e) => return Some(Err(e)),
             }
+            b'\\' => {
+                // Accept a restrictive set of escape sequences
+                if let Some((_, c)) = it.next() {
+                    if !matches!(c, b'!' | b'*' | b'?' | b'{' | b'}' | b'[' | b']' | b'\\') {
+                        return Err(GlobError::new(
+                            GlobErrorKind::InvalidEscape,
+                            Some(i as u32),
+                        ));
+                    }
+                } else {
+                    return Err(GlobError::new(
+                        GlobErrorKind::DanglingEscape,
+                        Some(i as u32),
+                    ));
+                }
+            }
+            b'?' => {
+                return Err(GlobError::new(
+                    GlobErrorKind::UnsupportedAnyCharacter,
+                    Some(i as u32),
+                ));
+            }
+            b'[' | b']' => {
+                return Err(GlobError::new(
+                    GlobErrorKind::UnsupportedCharacterClass,
+                    Some(i as u32),
+                ));
+            }
+            b'{' | b'}' => {
+                return Err(GlobError::new(
+                    GlobErrorKind::UnsupportedAlternates,
+                    Some(i as u32),
+                ));
+            }
+            _ => {}
         }
+        allow_globstar = c == b'/';
     }
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::str::FromStr;
+    use std::fs;
+    use std::path::Path;
+    #[cfg(test)]
+    use tempfile::TempDir;
 
     #[test]
     fn test_validate_glob() {
-        assert_eq!(
-            Glob::parse("*.[jt]s"),
-            Err("Invalid glob pattern: Character class `[]` are not supported. Use `\\[` and `\\]` to escape the characters.".to_string())
-        );
-        assert_eq!(
-            Glob::parse("?*.js"),
-            Err("Invalid glob pattern: `?` matcher is not supported. Use `\\?` to escape the character.".to_string())
-        );
-        assert_eq!(
-            Glob::parse(r"\"),
-            Err("Invalid glob pattern: Unterminated escape sequence.".to_string())
-        );
-        assert_eq!(
-            Glob::parse(r"\n"),
-            Err("Invalid glob pattern: Invalid escape sequence.".to_string())
-        );
-        assert_eq!(
-            Glob::parse(r"\😀"),
-            Err("Invalid glob pattern: Invalid escape sequence.".to_string())
-        );
-        assert_eq!(
-            Glob::parse(r"***"),
-            Err("Invalid glob pattern: `**` must be enclosed by the path separator `/`, or the start/end of the glob and mustn't be followed by `/**`.".to_string())
-        );
-        assert_eq!(
-            Glob::parse(r"a**"),
-            Err("Invalid glob pattern: `**` must be enclosed by the path separator `/`, or the start/end of the glob and mustn't be followed by `/**`.".to_string())
-        );
-        assert_eq!(
-            Glob::parse(r"**a"),
-            Err("Invalid glob pattern: `**` must be enclosed by the path separator `/`, or the start/end of the glob and mustn't be followed by `/**`.".to_string())
-        );
-        assert_eq!(
-            Glob::parse(r"**/**"),
-            Err("Invalid glob pattern: `**` must be enclosed by the path separator `/`, or the start/end of the glob and mustn't be followed by `/**`.".to_string())
-        );
+        assert!(matches!(
+            Glob::from_str("*.[jt]s"),
+            Err(GlobError { kind: GlobErrorKind::UnsupportedCharacterClass, .. })
+        ));
+        assert!(matches!(
+            Glob::from_str("?*.js"),
+            Err(GlobError { kind: GlobErrorKind::UnsupportedAnyCharacter, .. })
+        ));
+        assert!(matches!(
+            Glob::from_str(r"\"),
+            Err(GlobError { kind: GlobErrorKind::DanglingEscape, .. })
+        ));
+        assert!(matches!(
+            Glob::from_str(r"\n"),
+            Err(GlobError { kind: GlobErrorKind::InvalidEscape, .. })
+        ));
+        assert!(matches!(
+            Glob::from_str(r"***"),
+            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+        ));
+        assert!(matches!(
+            Glob::from_str(r"a**"),
+            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+        ));
+        assert!(matches!(
+            Glob::from_str(r"**a"),
+            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+        ));
+        assert!(matches!(
+            Glob::from_str(r"**/**"),
+            Err(GlobError { kind: GlobErrorKind::InvalidGlobStar, .. })
+        ));
 
-        assert!(Glob::parse("!*.js").is_ok());
-        assert!(Glob::parse("!").is_ok());
-        assert!(Glob::parse("*.js").is_ok());
-        assert!(Glob::parse("**/*.js").is_ok());
-        assert!(Glob::parse(r"\*").is_ok());
-        assert!(Glob::parse(r"\!").is_ok());
-        assert!(Glob::parse(r"**").is_ok());
-        assert!(Glob::parse(r"/**/").is_ok());
-        assert!(Glob::parse(r"**/").is_ok());
-        assert!(Glob::parse(r"/**").is_ok());
+        assert!(Glob::from_str("!*.js").is_ok());
+        assert!(Glob::from_str("!").is_ok());
+        assert!(Glob::from_str("*.js").is_ok());
+        assert!(Glob::from_str("**/*.js").is_ok());
+        assert!(Glob::from_str(r"\*").is_ok());
+        assert!(Glob::from_str(r"\!").is_ok());
+        assert!(Glob::from_str(r"**").is_ok());
+        assert!(Glob::from_str(r"/**/").is_ok());
+        assert!(Glob::from_str(r"**/").is_ok());
+        assert!(Glob::from_str(r"/**").is_ok());
     }
 
     #[test]
@@ -343,23 +295,23 @@ mod tests {
         let a = CandidatePath::new(&"a");
 
         assert!(a.matches_with_exceptions(&[
-            Glob::parse("*").unwrap(),
-            Glob::parse("!b").unwrap(),
+            Glob::from_str("*").unwrap(),
+            Glob::from_str("!b").unwrap(),
         ]));
         assert!(!a.matches_with_exceptions(&[
-            Glob::parse("*").unwrap(),
-            Glob::parse("!a*").unwrap(),
+            Glob::from_str("*").unwrap(),
+            Glob::from_str("!a*").unwrap(),
         ]));
         assert!(a.matches_with_exceptions(&[
-            Glob::parse("*").unwrap(),
-            Glob::parse("!a*").unwrap(),
-            Glob::parse("a").unwrap(),
+            Glob::from_str("*").unwrap(),
+            Glob::from_str("!a*").unwrap(),
+            Glob::from_str("a").unwrap(),
         ]));
     }
 
     #[test]
     fn test_to_string() {
-        assert_eq!(Glob::parse("**/*.rs").unwrap().to_string(), "**/*.rs");
-        assert_eq!(Glob::parse("!**/*.rs").unwrap().to_string(), "!**/*.rs");
+        assert_eq!(Glob::from_str("**/*.rs").unwrap().to_string(), "**/*.rs");
+        assert_eq!(Glob::from_str("!**/*.rs").unwrap().to_string(), "!**/*.rs");
     }
 }

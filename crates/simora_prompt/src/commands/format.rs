@@ -3,11 +3,12 @@ use std::fs;
 use std::path::Path;
 use regex::Regex;
 use std::cell::RefCell;
+use std::str::FromStr;
 
 use crate::console::Console;
 use crate::diagnostics::CliDiagnostic;
 use crate::workspace::Workspace;
-use crate::globby::GlobMatcher;
+use crate::globby::Glob;
 
 /// Represents a single formatting rule with its configuration
 #[derive(Debug, Clone)]
@@ -98,18 +99,20 @@ impl CommandRunner for FormatCommand {
                 self.process_file(path, console)?;
             } else if path.is_dir() {
                 let glob_pattern = format!("{}/**/*.md", path.display());
-                let matcher = GlobMatcher::new(&glob_pattern)
+                let glob = Glob::from_str(&glob_pattern)
                     .map_err(|e| CliDiagnostic::error(format!("Invalid glob pattern: {}", e)))?;
 
-                for entry in matcher.walk(workspace.root()) {
+                for entry in walkdir::WalkDir::new(workspace.root()) {
                     match entry {
-                        Ok(entry) if entry.path().is_file() => {
-                            self.process_file(entry.path(), console)?;
+                        Ok(entry) => {
+                            let path = entry.path();
+                            if path.is_file() && glob.is_match(path.to_str().unwrap_or_default()) {
+                                self.process_file(path, console)?;
+                            }
                         }
                         Err(e) => {
                             console.log(&format!("Error processing entry: {}", e));
                         }
-                        _ => {}
                     }
                 }
             }
@@ -176,7 +179,7 @@ impl FormatCommand {
             },
             FormatRule {
                 id: String::from("clean-headings"),
-                pattern: Regex::new(r"^(#+)\s*[*_](.*?)[*_]\s*$").unwrap(),
+                pattern: Regex::new(r"^(#+)\s*[*_]{1,2}(.*?)[*_]{1,2}\s*$").unwrap(),
                 replacement: String::from("$1 $2"),
                 is_safe: true,
                 description: String::from("Cleans headings by removing asterisks and underscores"),
@@ -283,8 +286,6 @@ mod tests {
     use std::cell::RefCell;
     use tempfile::TempDir;
 
-    /// A mock console implementation for testing
-    #[derive(Default)]
     struct MockConsole {
         messages: RefCell<Vec<String>>,
     }
@@ -296,6 +297,18 @@ mod tests {
 
         fn error(&self, message: &str) {
             self.messages.borrow_mut().push(format!("ERROR: {}", message));
+        }
+    }
+
+    impl MockConsole {
+        fn new() -> Self {
+            Self {
+                messages: RefCell::new(Vec::new()),
+            }
+        }
+
+        fn get_logs(&self) -> Vec<String> {
+            self.messages.borrow().clone()
         }
     }
 
@@ -337,8 +350,8 @@ mod tests {
     #[test]
     fn test_file_processing() -> Result<(), Box<dyn std::error::Error>> {
         let temp_dir = TempDir::new()?;
-        let _workspace = Workspace::new();
-        let console = MockConsole::default();
+        let workspace = Workspace::new();
+        let console = MockConsole::new();
 
         // Create a test file
         let test_file = temp_dir.path().join("test.md");
@@ -387,7 +400,7 @@ mod tests {
 
     #[test]
     fn test_help_output() {
-        let console = MockConsole::default();
+        let console = MockConsole::new();
         let cmd = FormatCommand {
             show_help: true,
             ..Default::default()
@@ -397,5 +410,113 @@ mod tests {
 
         // Verify help message contains expected content
         assert!(console.messages.borrow().iter().any(|msg| msg.contains("Usage: simora-prompt format")));
+    }
+
+    #[test]
+    fn test_stdin_processing() {
+        let console = MockConsole::new();
+        let cmd = FormatCommand::new(
+            false,
+            false,
+            vec![],
+            Some("test.md".to_string()),
+        );
+
+        assert!(cmd.stdin_file_path.is_some());
+        assert_eq!(cmd.stdin_file_path.unwrap(), "test.md");
+    }
+
+    #[test]
+    fn test_multiple_files_processing() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = TempDir::new()?;
+        let workspace = Workspace::new();
+        let console = MockConsole::new();
+
+        // Create multiple test files
+        let test_files = vec![
+            ("test1.md", "# *Heading 1*\n- Item 1"),
+            ("test2.md", "## _Heading 2_\n* Item 2"),
+            ("test3.md", "### **Heading 3**\n- Item 3"),
+        ];
+
+        let mut paths = Vec::new();
+        for (name, content) in test_files.clone() {
+            let file_path = temp_dir.path().join(name);
+            fs::write(&file_path, content)?;
+            paths.push(file_path.into_os_string());
+        }
+
+        let cmd = FormatCommand::new(true, false, paths, None);
+
+        // Process all files
+        for path in test_files.iter().map(|(name, _)| temp_dir.path().join(name)) {
+            cmd.process_file(&path, &console)?;
+        }
+
+        // Verify each file was processed correctly
+        assert_eq!(
+            fs::read_to_string(temp_dir.path().join("test1.md"))?,
+            "# Heading 1\n  - Item 1"
+        );
+        assert_eq!(
+            fs::read_to_string(temp_dir.path().join("test2.md"))?,
+            "## Heading 2\n  * Item 2"
+        );
+        assert_eq!(
+            fs::read_to_string(temp_dir.path().join("test3.md"))?,
+            "### Heading 3\n  - Item 3"
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_format_rules_individual() {
+        let rules = FormatCommand::get_format_rules();
+
+        // Test smart quotes rule
+        let smart_quotes = rules.iter().find(|r| r.id == "smart-quotes").unwrap();
+        assert!(smart_quotes.is_safe);
+        assert_eq!(
+            smart_quotes.pattern.replace_all(r#""test""#, &smart_quotes.replacement),
+            r#""test""#
+        );
+
+        // Test clean headings rule
+        let clean_headings = rules.iter().find(|r| r.id == "clean-headings").unwrap();
+        assert!(clean_headings.is_safe);
+        assert_eq!(
+            clean_headings.pattern.replace_all("# *Test*", &clean_headings.replacement),
+            "# Test"
+        );
+
+        // Test standardize dashes rule
+        let standardize_dashes = rules.iter().find(|r| r.id == "standardize-dashes").unwrap();
+        assert!(standardize_dashes.is_safe);
+        assert_eq!(
+            standardize_dashes.pattern.replace_all("test — test", &standardize_dashes.replacement),
+            "test - test"
+        );
+    }
+
+    #[test]
+    fn test_error_handling() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = TempDir::new()?;
+        let console = MockConsole::new();
+        let cmd = FormatCommand::new(true, false, vec![], None);
+
+        // Test non-existent file
+        let non_existent = temp_dir.path().join("non_existent.md");
+        let result = cmd.process_file(&non_existent, &console);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("File not found"));
+
+        // Test directory instead of file
+        let dir_path = temp_dir.path().join("test_dir");
+        fs::create_dir(&dir_path)?;
+        let result = cmd.process_file(&dir_path, &console);
+        assert!(result.is_err());
+
+        Ok(())
     }
 }
