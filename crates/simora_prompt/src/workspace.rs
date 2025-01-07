@@ -89,13 +89,19 @@ mod tests {
     #[test]
     fn test_workspace_default() {
         let workspace = Workspace::default();
-        assert_eq!(workspace.root(), &std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+        assert_eq!(
+            workspace.root(),
+            &std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
+        );
     }
 
     #[test]
     fn test_workspace_new() {
         let workspace = Workspace::new();
-        assert_eq!(workspace.root(), &std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+        assert_eq!(
+            workspace.root(),
+            &std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
+        );
     }
 
     #[test]
@@ -103,13 +109,19 @@ mod tests {
         let workspace = Workspace::new();
         let root = workspace.root();
         assert!(root.is_absolute());
-        assert_eq!(root, &std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+        assert_eq!(
+            root,
+            &std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
+        );
     }
 
     #[test]
     fn test_workspace_debug_format() {
         let workspace = Workspace::new();
         let expected_path = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
-        assert_eq!(format!("{:?}", workspace), format!("Workspace {{ root: {:?} }}", expected_path));
+        assert_eq!(
+            format!("{:?}", workspace),
+            format!("Workspace {{ root: {:?} }}", expected_path)
+        );
     }
 }
