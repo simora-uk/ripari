@@ -1,0 +1,26 @@
+{
+  "markdown": {
+    "enabled": true,
+    "rules": {
+      "smart_quotes": {
+        "enabled": true
+      },
+      "headings": {
+        "enabled": true,
+        "remove_emphasis": true
+      },
+      "remove_horizontal_rules": {
+        "enabled": true
+      },
+      "punctuation": {
+        "enabled": true,
+        "standardize_dashes": true,
+        "standardize_ellipsis": true
+      }
+    }
+  },
+  "files": {
+    "include": ["**/*.md"]
+  },
+  "root": true
+}

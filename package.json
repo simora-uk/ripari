@@ -1,0 +1,14 @@
+{
+  "name": "@simora-uk/ripari",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "check:apply": "cargo ripari-cli-dev check --fix --unsafe",
+    "check": "cargo ripari-cli-dev check",
+    "ci": "cargo ripari-cli-dev ci"
+  },
+  "keywords": [],
+  "author": "Simeon Pashley",
+  "license": "MIT OR Apache-2.0",
+  "packageManager": "pnpm@9.15.3"
+}

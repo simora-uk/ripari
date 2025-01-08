@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+const { platform, arch, env, version, release } = process;
+const { execSync } = require("child_process");
+
+function isMusl() {
+	let stderr;
+	try {
+		stderr = execSync("ldd --version", {
+			stdio: ['pipe', 'pipe', 'pipe']
+		});
+	} catch (err) {
+		stderr = err.stderr;
+	}
+	if (stderr.indexOf("musl") > -1) {
+		return true;
+	}
+	return false;
+}
+
+const PLATFORMS = {
+	win32: {
+		x64: "@simora-uk/cli-win32-x64/ripari.exe",
+		arm64: "@simora-uk/cli-win32-arm64/ripari.exe",
+	},
+	darwin: {
+		x64: "@simora-uk/cli-darwin-x64/ripari",
+		arm64: "@simora-uk/cli-darwin-arm64/ripari",
+	},
+	linux: {
+		x64: "@simora-uk/cli-linux-x64/ripari",
+		arm64: "@simora-uk/cli-linux-arm64/ripari",
+	},
+	"linux-musl": {
+		x64: "@simora-uk/cli-linux-x64-musl/ripari",
+		arm64: "@simora-uk/cli-linux-arm64-musl/ripari",
+	},
+};
+
+const binPath = env.RIPARI_BINARY  ||
+	(platform === "linux" && isMusl()
+		? PLATFORMS?.["linux-musl"]?.[arch]
+		: PLATFORMS?.[platform]?.[arch]
+	);
+
+if (binPath) {
+	const packageManager = detectPackageManager();
+	const result = require("child_process").spawnSync(
+		require.resolve(binPath),
+		process.argv.slice(2),
+		{
+			shell: false,
+			stdio: "inherit",
+			env: {
+				...env,
+				JS_RUNTIME_VERSION: version,
+				JS_RUNTIME_NAME: release.name,
+				...(packageManager != null
+					? { NODE_PACKAGE_MANAGER: packageManager }
+					: {}),
+			},
+		},
+	);
+
+	if (result.error) {
+		throw result.error;
+	}
+
+	process.exitCode = result.status;
+} else {
+	console.error(
+		"The Ripari CLI package doesn't ship with prebuilt binaries for your platform yet. " +
+			"You can still use the CLI by cloning the ripari/tools repo from GitHub, " +
+			"and follow the instructions there to build the CLI for your platform.",
+	);
+	process.exitCode = 1;
+}
+
+function detectPackageManager() {
+	const userAgent = env.npm_config_user_agent;
+
+	if (userAgent == null) {
+		return null;
+	}
+
+	return userAgent.split(" ")[0];
+}

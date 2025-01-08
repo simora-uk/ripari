@@ -1,0 +1,20 @@
+.env
+.DS_Store
+Profile-*.json
+# Editor configuration
+.vscode/*
+.idea
+.vs
+# Release artifacts
+**/target
+# Ignore test files that contributors could create locally
+**/test.*
+# Ignore third-party files
+**/node_modules
+**/dist
+**/build
+.pnpm-debug.log
+BOTS_PROHIBITED/
+
+# https://github.com/nnethercote/dhat-rs output file
+dhat-heap.json

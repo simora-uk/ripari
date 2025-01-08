@@ -1,0 +1,99 @@
+## LESSONS LEARNED
+
+You keep making the same mistakes, use these rules:
+- in `.rs` files you MUST semi-colons to end lines.
+
+## Project Overview
+- **Project Name**: Ripari by Simora  (ripari , @simora-uk/ripari)
+- **Purpose**: A command-line interface (CLI) tool for managing and formatting Markdown files with modular commands.
+
+By Simora, the **Ripari**  CLI application is a modular, extensible command-line interface designed to streamline and manage Markdown formatting and linting tasks. The application achieves this by providing individual commands encapsulated in a flexible architecture, making it easy to add new functionality or modify existing commands.
+
+The output for this tool must work on both command-line and via a Visual Studio Code Extension.
+
+### Intended Usage
+
+All file discovery supports "globbing" described in "docs/globby.md"
+
+1. **Run Markdown Formatting**
+   - Command: `ripari format --write ./src`
+   - **Description**: Formats Markdown files based on predefined rules.
+   - **Use Case**: Ensures Markdown files adhere to consistent styling guidelines across the project.
+   - **Example**:
+     ```bash
+     ripari format --write
+     ```
+2. **Run Markdown Linting (Stubbed)**
+   - Command: `ripari lint --write ./src`
+   - **Description**: Placeholder functionality to demonstrate modularity for analysing Markdown files for potential issues.
+   - **Use Case**: Provides a scaffold for future extensions, such as detecting Markdown structural errors or enforcing additional stylistic rules.
+   - **Example**:
+     ```bash
+     ripari lint
+     ```
+
+3. **Command Modularity**
+   - The application uses individual modules (e.g., `format.rs`, `lint.rs`) for each command, allowing for:
+     - Independent logic handling.
+     - Clear separation of concerns.
+     - Future extensibility (e.g., adding a `test` or `validate` command).
+
+4. **Formatting Rules**
+Implemented as an extensible set of regexp:
+- each one should have a unique identifier (slug) that can have it's behaviour changed in future
+- modifier can be marked as "safe" or "experimental", "safe" are configured on by default.
+
+Examples:
+   - **Replace Smart Punctuation**: Convert smart quotes and dashes to standard equivalents.
+   - **Clean Up Headings**: Remove bold or italic styling from headings.
+   - **Replace Dashes with Hyphens**: Ensure uniform use of hyphens across Markdown files.
+
+1. **Configuration Management**
+   - Relies on a `Workspace` abstraction to handle paths and project-specific settings.
+   - Provides a consistent interface for configuration, adaptable to various Markdown projects.
+
+2. **Output and Diagnostics**
+   - Utilises the `Console` module for logging output to the terminal.
+   - Reports errors and feedback consistently via the `diagnostics` module, ensuring a cohesive user experience.
+
+3. **CLI Interface**
+   - Arguments and flags are parsed and dispatched via the `commands/mod.rs` dispatcher.
+   - Each command supports additional flags (e.g., `--write` for formatting).
+
+## Technology
+- **Language**: Rust
+- **Build System**: Cargo
+- **Libraries**: Standard Rust crates
+
+## Project Structure
+- **Root Directory**: `cli/crates/ripari_cli`
+- **Key Modules**:
+  - `main.rs`: Entry point for the CLI.
+  - `commands/mod.rs`: Command dispatcher and integration for CLI commands.
+  - `commands/format.rs`: Handles the `format` command logic.
+  - `commands/lint.rs`: Handles the `lint` command logic.
+  - `console.rs`: Defines the `Console` interface and `EnvConsole` implementation.
+  - `workspace.rs`: Manages project-specific settings and paths.
+  - `diagnostics.rs`: Provides diagnostic utilities.
+
+## Command Execution
+- Each command implements an `execute` method.
+- Commands use the shared `Workspace` and `Console` interfaces.
+
+## Development Guidelines
+- **Commands**:
+  - Place command logic in `src/commands/<command>.rs`.
+  - Export commands in `src/commands/mod.rs`.
+- **Testing**:
+  - Use unit tests within the respective modules.
+- **Error Messaging**:
+  - Centralise errors using `diagnostics.rs`.
+
+## Formatting
+- Follow Rust's `rustfmt` rules.
+- Use `cargo fmt` before commits.
+
+## Build & Run
+- **Build**: `cargo build --release`
+- **Install**: `cargo install --path .`
+- **Run**: `./target/release/ripari <command>`

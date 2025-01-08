@@ -1,0 +1,14 @@
+[package]
+description = "Glob pattern matching for ripari"
+edition     = "2021"
+license     = "MIT"
+name        = "simora_glob"
+version     = "0.1.0"
+
+[dependencies]
+globset = "0.4.13"
+regex   = "1.10.2"
+walkdir = "2.4.0"
+
+[dev-dependencies]
+tempfile = "3.9.0"
