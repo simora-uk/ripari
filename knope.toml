@@ -1,122 +1,59 @@
 ## npm packages
 [packages.cli]
-changelog = "CHANGELOG.md"
 versioned_files = [
   "packages/@simora-uk/ripari/package.json",
-  # Platform binaries
   "packages/@simora-uk/cli-darwin-arm64/package.json",
   "packages/@simora-uk/cli-darwin-x64/package.json",
   "packages/@simora-uk/cli-linux-arm64/package.json",
-  "packages/@simora-uk/cli-linux-arm64-musl/package.json",
   "packages/@simora-uk/cli-linux-x64/package.json",
-  "packages/@simora-uk/cli-linux-x64-musl/package.json",
   "packages/@simora-uk/cli-win32-arm64/package.json",
-  "packages/@simora-uk/cli-win32-x64/package.json",
-  "packages/@simora-uk/cli-win32-x64/package.json",
+  "packages/@simora-uk/cli-win32-x64/package.json"
 ]
 
-
-# Special crate. This is the main binary that we are going to release.
 [packages.ripari_cli]
 versioned_files = ["crates/ripari_cli/Cargo.toml"]
-# Artifact names
-[[packages.ripari_cli.assets]]
-name = "ripari-win32-x64.tgz"
-path = "dist/ripari-win32-x64.tgz"
-[[packages.ripari_cli.assets]]
-name = "ripari-win32-arm64.tgz"
-path = "dist/ripari-win32-arm64.tgz"
-[[packages.ripari_cli.assets]]
-name = "ripari-linux-x64.tgz"
-path = "dist/ripari-linux-x64.tgz"
-[[packages.ripari_cli.assets]]
-name = "ripari-linux-arm64.tgz"
-path = "dist/ripari-linux-arm64.tgz"
-[[packages.ripari_cli.assets]]
-name = "ripari-linux-x64-musl.tgz"
-path = "dist/ripari-linux-x64-musl.tgz"
-[[packages.ripari_cli.assets]]
-name = "ripari-linux-arm64-musl.tgz"
-path = "dist/ripari-linux-arm64-musl.tgz"
-[[packages.ripari_cli.assets]]
-name = "ripari-darwin-x64.tgz"
-path = "dist/ripari-darwin-x64.tgz"
-[[packages.ripari_cli.assets]]
-name = "ripari-darwin-arm64.tgz"
-path = "dist/ripari-darwin-arm64.tgz"
 
 [packages.simora_configuration]
-changelog       = "crates/simora_configuration/CHANGELOG.md"
 versioned_files = ["crates/simora_configuration/Cargo.toml"]
+
 [packages.simora_formatter]
-changelog       = "crates/simora_formatter/CHANGELOG.md"
 versioned_files = ["crates/simora_formatter/Cargo.toml"]
+
 [packages.simora_glob]
-changelog       = "crates/simora_glob/CHANGELOG.md"
 versioned_files = ["crates/simora_glob/Cargo.toml"]
 
-# Workflow to create a changeset
+# Workflow for bumping versions
 [[workflows]]
-name = "document-change"
-
-[[workflows.steps]]
-type = "CreateChangeFile"
-# end-workflow
-
-# Workflow that creates a PR via GitHub actions. This PR will contain all the changes for a release: changelogs, version numbers, etc.
-# Refernce: https://knope.tech/recipes/1-preview-releases-with-pull-requests/#prepare-release-workflow
-[[workflows]]
-name = "prepare-release"
-[[workflows.steps]]
-command = "git switch -c release/automated-ci"
-type    = "Command"
+name = "bump-version"
 
 [[workflows.steps]]
 type = "PrepareRelease"
-# we have been following conventional commits, although inside the monorepo it's difficult to define scopes
 ignore_conventional_commits = true
+# Ensure versions are always bumped, even if no changes are detected
+allow_empty = true
 
 [[workflows.steps]]
 type = "Command"
-# Workaround to update the lock files
-# https://github.com/knope-dev/knope/issues/162
-command = "cargo update -w"
+command = "cargo update -w"  # Update Cargo.lock to reflect new versions
 
 [[workflows.steps]]
 type = "Command"
-# WARNING: if you change this message, remember to update the `prepare_release.yml` too, because it uses this message
-command = "git commit -m \"chore: prepare release\""
+command = "git commit -am 'chore: bump versions for pre-release'"
 
 [[workflows.steps]]
-# WARNING: if you change the name of the branch, update `prepare_release.yml` too
-command = "git push --force-with-lease --set-upstream origin release/automated-ci"
-type    = "Command"
+type = "Command"
+command = "git push --set-upstream origin bump-version/pre-release"
 
 [[workflows.steps]]
 base = "main"
 type = "CreatePullRequest"
 
 [workflows.steps.title]
-template = "chore: prepare release"
+template = "chore: bump versions for pre-release"
 
 [workflows.steps.body]
-template = "This PR was automatically created via workflow. Merging it will create a new release of the Ripari packages and crates."
-# end-workflow
+template = "This PR contains version updates for the upcoming pre-release stage."
 
-# The release workflow that will run in CI. It is triggered when the prepare-release PR is merged
-[[workflows]]
-name = "release"
-
-[[workflows.steps]]
-# The script will add most up-to-date optional dependencies to the manifest of @simora-uk/ripari
-command = "node scripts/generate-packages.mjs"
-type    = "Command"
-
-[[workflows.steps]]
-type = "Release"
-
-# GitHub related information. `owner` is the name of the org, `repo` is the name of the repository where the actions run
 [github]
 owner = "simora-uk"
-repo  = "ripari"
-# end-workflow
+repo = "ripari"
