@@ -1,11 +1,32 @@
-**Ripari** is a performant toolchain for web projects, it aims to provide developer tools to maintain the health of said projects.
+# Ripari - Taming ChatGPT’s Markdown Mayhem
 
-**Ripari is a fast formatter** for _JavaScript_, _TypeScript_, _JSX_, _JSON_, _CSS_ and _GraphQL_.
+## Overview
 
-**Ripari is a performant linter** for _JavaScript_, _TypeScript_, _JSX_, _CSS_ and _GraphQL_.
+Ripari is a lightweight, purpose-built **Markdown cleaner** and **ChatGPT Markdown tool** designed to **fix and standardise Markdown files**. Whether you’re dealing with ChatGPT's quirky Markdown output or messy files, Ripari provides a smarter, faster, and safer solution. It simplifies formatting tasks, making it an essential tool for content creators, developers, and anyone working with Markdown.
 
-**Ripari** is designed from the start to be used interactively within an editor.
-It can format and lint malformed code as you are writing it.
+
+## Features
+
+- **Designed for ChatGPT Markdown Output**:
+  - Corrects quirks such as smart punctuation, over-emphasised headings, unnecessary horizontal rules, and inconsistent em-dashes.
+- **Batch Processing**:
+  - Supports single files, directories, and glob patterns for bulk operations.
+- **Customisable Transformations**:
+  - Disable or adjust specific rules to fit your unique requirements.
+- **Intuitive CLI**:
+  - Simple and efficient commands to streamline your workflow.
+- **Sane Defaults, Zero Configuration**
+  - Ripari works out of the box with sensible defaults, requiring no configuration for most users.
+- **Lightning-Fast and Reliable**
+  - Built in Rust, Ripari eliminates the need for Node.js dependencies, delivering a robust and speedy experience.
+
+**Why Ripari Over Search & Replace?**
+
+- **Context-Aware**: Avoids damaging code blocks and quotes by understanding Markdown structure.
+- **Safe Transformations**: Applies changes without altering sensitive content.
+- **Configurable**: Customise rules to match your specific needs.
+- **Batch Processing**: Cleans multiple files simultaneously, saving time.
+- **Deterministic**: Consistent, repeatable results with every run.
 
 ### Installation
 
@@ -16,52 +37,107 @@ npm install --save-dev --save-exact @simora-uk/ripari
 ### Usage
 
 ```shell
-# format files
+# Format files
 npx @simora-uk/ripari format --write ./src
 
-# lint files and apply the safe fixes
+# Lint files and apply safe fixes
 npx @simora-uk/ripari lint --write ./src
 
-# run format, lint, etc. and apply the safe fixes
+# Run format, lint, and apply safe fixes
 npx @simora-uk/ripari check --write ./src
 
-# check all files against format, lint, etc. in CI environments
+# Check files in CI environments
 npx @simora-uk/ripari ci ./src
 ```
 
-## Documentation
+## Example Transformations
 
-Check out our [homepage][simora] to learn more about Ripari,
-or directly head to the [Getting Started guide][getting-started] to start using Ripari.
+### Input
 
-## More about Ripari
+```markdown
+# **Introduction to "Smart" Formatting—A Guide**
 
-**Ripari** has sane defaults and it doesn't require configuration.
+Here's what ChatGPT typically outputs:
 
-**Ripari** aims to support [all main languages][language-support] of modern web development.
+- It uses "smart quotes" everywhere
+- Also uses 'single quotes'
+- It loves em-dashes—like this—in sentences
+```
 
-**Ripari** doesn't require Node.j to function.
+### Output
 
-**Ripari** has first-class LSP support, with a sophisticated parser that represents the source text in full fidelity and top-notch error recovery.
+```markdown
+# Introduction to "Smart" Formatting-A Guide
 
-**Ripari** unifies functionality that has previously been separate tools. Building upon a shared base allows us to provide a cohesive experience for processing code, displaying errors, parallelize work, caching, and configuration.
+Here's what ChatGPT typically outputs:
 
-## Funding
+- It uses "smart quotes" everywhere
+- Also uses 'single quotes'
+- It loves em-dashes-like this-in sentences
+```
 
-You can fund the project in different ways
+## Configuration
 
-### Project sponsorship and funding
+Ripari provides fine-grained control over Markdown formatting through a configuration file (`simora.json`). It adapts to the structure and context of Markdown, avoiding indiscriminate search-and-replace logic.
 
-You can sponsor or fund the project via [GitHub sponsors](https://github.com/sponsors/simeonpashley)
+### Available Rules
 
-Ripari offers a simple sponsorship program that allows companies to get visibility and recognition among various developers.
+1. **Smart Quotes** (`smart_quotes`):
 
-### Issue funding
+   - Converts "smart" quotes to standard ASCII quotes.
+   - Preserves apostrophes in contractions and ignores code blocks.
 
-We use [Polar.sh](https://polar.sh/simora-uk/issues) to up-vote and promote specific features that you would like to see and implement. Check our backlog of  and help us.
+2. **Headings** (`headings`):
+
+   - Removes bold/italic emphasis from headings.
+
+3. **Horizontal Rules** (`remove_horizontal_rules`):
+
+   - Removes unnecessary rules outside of code blocks.
+
+4. **Punctuation** (`punctuation`):
+   - Converts em-dashes to hyphens and ellipses to three dots.
+
+### Configuration Example
+
+```json
+{
+  "markdown": {
+    "enabled": true,
+    "rules": {
+      "smart_quotes": { "enabled": true },
+      "headings": { "enabled": true, "remove_emphasis": true },
+      "remove_horizontal_rules": { "enabled": true },
+      "punctuation": {
+        "enabled": true,
+        "standardize_dashes": true,
+        "standardize_ellipsis": true
+      }
+    }
+  },
+  "files": {
+    "include": ["**/*.md"]
+  },
+  "root": true
+}
+```
+
+### Context-Aware Processing
+
+Ripari ensures your Markdown retains its structure:
+
+1. **Code Blocks**: No transformations are applied inside code blocks.
+2. **Blockquotes**: Quoted content remains untouched.
+3. **Markdown Context**: Rules are applied selectively based on content type.
+
+## Funding and Sponsorship
+
+Support Ripari's development by sponsoring via [GitHub Sponsors](https://github.com/sponsors/simeonpashley). Companies can also benefit from increased visibility among developers.
+
+Use [Polar.sh](https://polar.sh/simora-uk/issues) to fund specific features or vote on the backlog.
 
 ## License
 
-This application is licensed for personal, non-commercial use. For commercial use, please contact [simora@pashley.org](mailto:simora@pashley.org).
+Ripari is licensed for personal, non-commercial use. For commercial use, contact [simora@pashley.org](mailto:simora@pashley.org).
 
-See the [LICENSE.md](./LICENSE.md) file for full details.
+For full details, see [LICENSE.md](./LICENSE.md).
