@@ -117,6 +117,6 @@ type = "Release"
 
 # GitHub related information. `owner` is the name of the org, `repo` is the name of the repository where the actions run
 [github]
-owner = "simora"
+owner = "simora-uk"
 repo  = "ripari"
 # end-workflow
