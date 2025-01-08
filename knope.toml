@@ -27,10 +27,17 @@ versioned_files = ["crates/simora_glob/Cargo.toml"]
 name = "prepare-release"
 
 [[workflows.steps]]
+command = """
+git switch -c bump-version/pre-release
+"""
+type = "Command"
+
+[[workflows.steps]]
 type = "PrepareRelease"
 ignore_conventional_commits = true
 # Ensure versions are always bumped, even if no changes are detected
 allow_empty = true
+bump = "minor"  # Ensure a minor version bump happens every time
 
 [[workflows.steps]]
 type = "Command"
