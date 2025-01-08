@@ -1,7 +1,7 @@
 [workspace]
 # Use the newer version of the cargo resolver
 # https://doc.rust-lang.org/cargo/reference/resolver.html#resolver-versions
-members  = ["crates/simora_prompt", "crates/simora_formatter", "crates/simora_configuration", "crates/simora_glob"]
+members  = ["crates/ripari_cli", "crates/simora_formatter", "crates/simora_configuration", "crates/simora_glob"]
 resolver = "2"
 
 [workspace.dependencies]
@@ -128,4 +128,4 @@ edition    = "2021"
 homepage   = "https://pashley.org/"
 keywords   = ["parser", "linter", "formatter"]
 license    = "MIT OR Apache-2.0"
-repository = "https://github.com/simora/simora-prompt-cli"
+repository = "https://github.com/simora-uk/ripari-cli"

@@ -19,20 +19,20 @@ function isMusl() {
 
 const PLATFORMS = {
 	win32: {
-		x64: "@biomejs/cli-win32-x64/biome.exe",
-		arm64: "@biomejs/cli-win32-arm64/biome.exe",
+		x64: "@simora/cli-win32-x64/ripari.exe",
+		arm64: "@simora/cli-win32-arm64/ripari.exe",
 	},
 	darwin: {
-		x64: "@biomejs/cli-darwin-x64/biome",
-		arm64: "@biomejs/cli-darwin-arm64/biome",
+		x64: "@simora/cli-darwin-x64/ripari",
+		arm64: "@simora/cli-darwin-arm64/ripari",
 	},
 	linux: {
-		x64: "@biomejs/cli-linux-x64/biome",
-		arm64: "@biomejs/cli-linux-arm64/biome",
+		x64: "@simora/cli-linux-x64/ripari",
+		arm64: "@simora/cli-linux-arm64/ripari",
 	},
 	"linux-musl": {
-		x64: "@biomejs/cli-linux-x64-musl/biome",
-		arm64: "@biomejs/cli-linux-arm64-musl/biome",
+		x64: "@simora/cli-linux-x64-musl/ripari",
+		arm64: "@simora/cli-linux-arm64-musl/ripari",
 	},
 };
 if (env.ROME_BINARY) {
@@ -72,7 +72,7 @@ if (binPath) {
 } else {
 	console.error(
 		"The Biome CLI package doesn't ship with prebuilt binaries for your platform yet. " +
-			"You can still use the CLI by cloning the biome/tools repo from GitHub, " +
+			"You can still use the CLI by cloning the ripari/tools repo from GitHub, " +
 			"and follow the instructions there to build the CLI for your platform.",
 	);
 	process.exitCode = 1;

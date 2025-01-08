@@ -36,7 +36,7 @@ impl Workspace {
             .map_err(|e| CliDiagnostic::error(format!("Failed to canonicalize path: {}", e)))?;
 
         loop {
-            let config_path = current_dir.join("simora.json");
+            let config_path = current_dir.join("ripari.json");
             if config_path.exists() {
                 let content = fs::read_to_string(&config_path).map_err(|e| {
                     CliDiagnostic::error(format!("Failed to read config file: {}", e))

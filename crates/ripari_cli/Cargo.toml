@@ -12,5 +12,5 @@ simora_glob          = { path = "../simora_glob" }
 walkdir              = "2"
 
 [[bin]]
-name = "simora-prompt"
+name = "ripari"
 path = "src/main.rs"

@@ -1,11 +1,11 @@
 {
-  "name": "@simora/simora-prompt",
+  "name": "@simora/ripari",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "check:apply": "cargo simora-prompt-cli-dev check --fix --unsafe",
-    "check": "cargo simora-prompt-cli-dev check",
-    "ci": "cargo simora-prompt-cli-dev ci"
+    "check:apply": "cargo ripari-cli-dev check --fix --unsafe",
+    "check": "cargo ripari-cli-dev check",
+    "ci": "cargo ripari-cli-dev ci"
   },
   "keywords": [],
   "author": "Simora Developers and Contributors",

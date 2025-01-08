@@ -2,8 +2,8 @@
 codegen               = "run -p xtask_codegen --"
 codegen-bindings      = "run -p xtask_codegen --features schema -- bindings"
 codegen-configuration = "run -p xtask_codegen --features configuration -- configuration"
-simora-prompt-cli     = "run -p simora-prompt_cli --release --"
-simora-prompt-cli-dev = "run -p simora-prompt_cli --"
+ripari-cli     = "run -p ripari_cli --release --"
+ripari-cli-dev = "run -p ripari_cli --"
 # updates a newly created crate
 codegen-license = "run -p xtask_codegen --features license -- license"
 codegen-migrate = "run -p xtask_codegen --features configuration -- migrate-eslint"
@@ -12,24 +12,24 @@ contributors = "run -p xtask_contributors --"
 coverage = "run -p xtask_coverage --profile=release-with-debug --"
 documentation = """
     doc \
-    -p simora-prompt_*formatter \
-    -p simora-prompt_control_flow \
-    -p simora-prompt_analyze \
-    -p simora-prompt_*analyze \
-    -p simora-prompt_*_syntax \
-    -p simora-prompt_*_factory \
-    -p simora-prompt_diagnostics \
-    -p simora-prompt_service \
-    -p simora-prompt_cli \
-    -p simora-prompt_console \
-    -p simora-prompt_*parser \
-    -p simora-prompt_text_edit \
-    -p simora-prompt_text_size \
-    -p simora-prompt_js_semantic \
-    -p simora-prompt_markup \
-    -p simora-prompt_rowan
-    -p simora-prompt_string_case \
-    -p simora-prompt_configuration \
+    -p ripari_*formatter \
+    -p ripari_control_flow \
+    -p ripari_analyze \
+    -p ripari_*analyze \
+    -p ripari_*_syntax \
+    -p ripari_*_factory \
+    -p ripari_diagnostics \
+    -p ripari_service \
+    -p ripari_cli \
+    -p ripari_console \
+    -p ripari_*parser \
+    -p ripari_text_edit \
+    -p ripari_text_size \
+    -p ripari_js_semantic \
+    -p ripari_markup \
+    -p ripari_rowan
+    -p ripari_string_case \
+    -p ripari_configuration \
     --no-deps
 """
 format = "fmt --all --verbose"

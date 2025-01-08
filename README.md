@@ -1,25 +1,25 @@
-# Simora Prompt CLI
+# Ripari CLI by Simora
 
 A performant toolchain for managing and formatting Markdown files.
 
-**Simora Prompt** is a performant toolchain for Markdown files, designed to maintain consistent formatting and style across your documentation.
+**Ripari** is a performant toolchain for Markdown files, designed to maintain consistent formatting and style across your documentation.
 
-**Simora Prompt** is a [fast formatter](#) for _Markdown_ files that ensures consistent styling and formatting across your documentation. It handles common issues like smart quotes, dashes, and heading styles.
+**Ripari** is a [fast formatter](#) for _Markdown_ files that ensures consistent styling and formatting across your documentation. It handles common issues like smart quotes, dashes, and heading styles.
 
 ### Installation
 
 ```shell
-cargo install simora-prompt
+cargo install ripari
 ```
 
 ### Usage
 
 ```shell
 # Format files
-simora-prompt format --write ./src
+ripari format --write ./src
 
 # Lint files (coming soon)
-simora-prompt lint --write ./src
+ripari lint --write ./src
 ```
 
 ## Example Transformations
@@ -56,7 +56,7 @@ Here's what ChatGPT typically outputs:
 
 ## Documentation
 
-Check out our documentation to learn more about Simora Prompt:
+Check out our documentation to learn more about Ripari:
 
 - [Getting Started](./docs/getting-started.md)
 - [Configuration](./docs/configuration.md)
@@ -64,7 +64,7 @@ Check out our documentation to learn more about Simora Prompt:
 
 ## Project Philosophy
 
-**Simora Prompt** is designed with these principles in mind:
+**Ripari** is designed with these principles in mind:
 
 - **Zero Configuration**: Works out of the box with sensible defaults
 - **Extensible**: Modular design allows for easy addition of new features
@@ -73,7 +73,6 @@ Check out our documentation to learn more about Simora Prompt:
 
 ## License
 
-**Simora Prompt** is MIT licensed.
+**Ripari** is MIT licensed.
 ```
 
-</rewritten_file>

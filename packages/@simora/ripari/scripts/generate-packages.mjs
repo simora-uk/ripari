@@ -20,7 +20,7 @@ function copyBinaryToNativePackage(platform, arch) {
 	const os = platform.split("-")[0];
 	const buildName = getName(platform, arch);
 	const packageRoot = resolve(PACKAGES_ROOT, buildName);
-	const packageName = `@biomejs/${buildName}`;
+	const packageName = `@simora/${buildName}`;
 
 	// Update the package.json manifest
 	const { version, license, repository, engines, homepage } = rootManifest;
@@ -54,9 +54,9 @@ function copyBinaryToNativePackage(platform, arch) {
 	const ext = os === "win32" ? ".exe" : "";
 	const binarySource = resolve(
 		REPO_ROOT,
-		`${getName(platform, arch, "biome")}${ext}`,
+		`${getName(platform, arch, "ripari")}${ext}`,
 	);
-	const binaryTarget = resolve(packageRoot, `biome${ext}`);
+	const binaryTarget = resolve(packageRoot, `ripari${ext}`);
 
 	if (!fs.existsSync(binarySource)) {
 		console.error(
@@ -71,7 +71,7 @@ function copyBinaryToNativePackage(platform, arch) {
 }
 
 function updateWasmPackage(target) {
-	const packageName = `@biomejs/wasm-${target}`;
+	const packageName = `@simora/wasm-${target}`;
 	const packageRoot = resolve(PACKAGES_ROOT, `wasm-${target}`);
 
 	const manifestPath = resolve(packageRoot, "package.json");
@@ -94,7 +94,7 @@ function writeManifest(packagePath) {
 
 	const nativePackages = PLATFORMS.flatMap((platform) =>
 		ARCHITECTURES.map((arch) => [
-			`@biomejs/${getName(platform, arch)}`,
+			`@simora/${getName(platform, arch)}`,
 			rootManifest.version,
 		]),
 	);
@@ -121,5 +121,5 @@ for (const platform of PLATFORMS) {
 	}
 }
 
-writeManifest("biome");
+writeManifest("ripari");
 writeManifest("backend-jsonrpc");

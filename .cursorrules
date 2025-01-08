@@ -4,10 +4,10 @@ You keep making the same mistakes, use these rules:
 - in `.rs` files you MUST semi-colons to end lines.
 
 ## Project Overview
-- **Project Name**: Simora Prompt CLI (simora-prompt)
+- **Project Name**: Ripari by Simora  (ripari , @simora/ripari)
 - **Purpose**: A command-line interface (CLI) tool for managing and formatting Markdown files with modular commands.
 
-The **Simora Prompt CLI** application is a modular, extensible command-line interface designed to streamline and manage Markdown formatting and linting tasks. The application achieves this by providing individual commands encapsulated in a flexible architecture, making it easy to add new functionality or modify existing commands.
+By Simora, the **Ripari**  CLI application is a modular, extensible command-line interface designed to streamline and manage Markdown formatting and linting tasks. The application achieves this by providing individual commands encapsulated in a flexible architecture, making it easy to add new functionality or modify existing commands.
 
 The output for this tool must work on both command-line and via a Visual Studio Code Extension.
 
@@ -16,20 +16,20 @@ The output for this tool must work on both command-line and via a Visual Studio 
 All file discovery supports "globbing" described in "docs/globby.md"
 
 1. **Run Markdown Formatting**
-   - Command: `simora-prompt format --write ./src`
+   - Command: `ripari format --write ./src`
    - **Description**: Formats Markdown files based on predefined rules.
    - **Use Case**: Ensures Markdown files adhere to consistent styling guidelines across the project.
    - **Example**:
      ```bash
-     simora-prompt format --write
+     ripari format --write
      ```
 2. **Run Markdown Linting (Stubbed)**
-   - Command: `simora-prompt lint --write ./src`
+   - Command: `ripari lint --write ./src`
    - **Description**: Placeholder functionality to demonstrate modularity for analysing Markdown files for potential issues.
    - **Use Case**: Provides a scaffold for future extensions, such as detecting Markdown structural errors or enforcing additional stylistic rules.
    - **Example**:
      ```bash
-     simora-prompt lint
+     ripari lint
      ```
 
 3. **Command Modularity**
@@ -66,7 +66,7 @@ Examples:
 - **Libraries**: Standard Rust crates
 
 ## Project Structure
-- **Root Directory**: `cli/crates/simora_prompt`
+- **Root Directory**: `cli/crates/ripari_cli`
 - **Key Modules**:
   - `main.rs`: Entry point for the CLI.
   - `commands/mod.rs`: Command dispatcher and integration for CLI commands.
@@ -96,4 +96,4 @@ Examples:
 ## Build & Run
 - **Build**: `cargo build --release`
 - **Install**: `cargo install --path .`
-- **Run**: `./target/release/simora-prompt <command>`
+- **Run**: `./target/release/ripari <command>`

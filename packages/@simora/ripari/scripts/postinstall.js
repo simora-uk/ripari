@@ -1,5 +1,5 @@
 const { platform, arch } = process;
-// biome-ignore lint/style/useNodejsImportProtocol: would be a breaking change, consider bumping node version next major version
+// ripari-ignore lint/style/useNodejsImportProtocol: would be a breaking change, consider bumping node version next major version
 const { execSync } = require("child_process");
 
 function isMusl() {
@@ -19,20 +19,20 @@ function isMusl() {
 
 const PLATFORMS = {
 	win32: {
-		x64: "@biomejs/cli-win32-x64/biome.exe",
-		arm64: "@biomejs/cli-win32-arm64/biome.exe",
+		x64: "@simora/cli-win32-x64/ripari.exe",
+		arm64: "@simora/cli-win32-arm64/ripari.exe",
 	},
 	darwin: {
-		x64: "@biomejs/cli-darwin-x64/biome",
-		arm64: "@biomejs/cli-darwin-arm64/biome",
+		x64: "@simora/cli-darwin-x64/ripari",
+		arm64: "@simora/cli-darwin-arm64/ripari",
 	},
 	linux: {
-		x64: "@biomejs/cli-linux-x64/biome",
-		arm64: "@biomejs/cli-linux-arm64/biome",
+		x64: "@simora/cli-linux-x64/ripari",
+		arm64: "@simora/cli-linux-arm64/ripari",
 	},
 	"linux-musl": {
-		x64: "@biomejs/cli-linux-x64-musl/biome",
-		arm64: "@biomejs/cli-linux-arm64-musl/biome",
+		x64: "@simora/cli-linux-x64-musl/ripari",
+		arm64: "@simora/cli-linux-arm64-musl/ripari",
 	},
 };
 
@@ -53,7 +53,7 @@ if (binName) {
 } else {
 	console.warn(
 		"The Biome CLI package doesn't ship with prebuilt binaries for your platform yet. " +
-			"You can still use the CLI by cloning the biomejs/biome repo from GitHub, " +
+			"You can still use the CLI by cloning the simora/ripari repo from GitHub, " +
 			"and follow the instructions there to build the CLI for your platform.",
 	);
 }

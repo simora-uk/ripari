@@ -1,24 +1,24 @@
 {
-  "name": "@simora/simora-prompt",
-  "version": "1.9.4",
+  "name": "@simora/ripari",
+  "version": "1.2.3",
   "bin": {
-    "biome": "bin/biome"
+    "ripari": "bin/ripari"
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js"
   },
-  "homepage": "https://biomejs.dev",
+  "homepage": "https://pashley.org",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/biomejs/biome.git",
-    "directory": "packages/@simora/simora-prompt"
+    "url": "git+https://github.com/simora-uk/ripari.git",
+    "directory": "packages/@simora/ripari"
   },
   "author": "Emanuele Stoppa",
   "license": "MIT OR Apache-2.0",
-  "bugs": "https://github.com/biomejs/biome/issues",
+  "bugs": "https://github.com/simora-uk/ripari/issues",
   "description": "Biome is a toolchain for the web: formatter, linter and more",
   "files": [
-    "bin/biome",
+    "bin/ripari",
     "scripts/postinstall.js",
     "configuration_schema.json",
     "README.md",
@@ -44,19 +44,19 @@
   },
   "funding": {
     "type": "opencollective",
-    "url": "https://opencollective.com/biome"
+    "url": "https://opencollective.com/ripari"
   },
   "publishConfig": {
     "provenance": true
   },
   "optionalDependencies": {
-    "@biomejs/cli-win32-x64": "1.9.4",
-    "@biomejs/cli-win32-arm64": "1.9.4",
-    "@biomejs/cli-darwin-x64": "1.9.4",
-    "@biomejs/cli-darwin-arm64": "1.9.4",
-    "@biomejs/cli-linux-x64": "1.9.4",
-    "@biomejs/cli-linux-arm64": "1.9.4",
-    "@biomejs/cli-linux-x64-musl": "1.9.4",
-    "@biomejs/cli-linux-arm64-musl": "1.9.4"
+    "@simora/cli-win32-x64": "1.2.3",
+    "@simora/cli-win32-arm64": "1.2.3",
+    "@simora/cli-darwin-x64": "1.2.3",
+    "@simora/cli-darwin-arm64": "1.2.3",
+    "@simora/cli-linux-x64": "1.2.3",
+    "@simora/cli-linux-arm64": "1.2.3",
+    "@simora/cli-linux-x64-musl": "1.2.3",
+    "@simora/cli-linux-arm64-musl": "1.2.3"
   }
 }

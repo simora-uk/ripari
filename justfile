@@ -1,4 +1,4 @@
-# This is your Justfile for Simora Prompt CLI
+# This is your Justfile for Ripari CLI
 
 # Default task, lists all tasks
 _default:
@@ -29,6 +29,10 @@ lint:
 install-tools:
   cargo install cargo-binstall
   cargo binstall cargo-insta taplo-cli wasm-pack wasm-tools
+
+# Task to install necessary development tools
+install:
+  cargo install --path .
 
 # Task to generate documentation
 documentation:

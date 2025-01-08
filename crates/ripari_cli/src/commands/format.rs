@@ -195,7 +195,7 @@ impl FormatCommand {
     fn print_help(console: &impl Console) {
         console.log("Run the formatter on a set of files.");
         console.log("");
-        console.log("Usage: simora-prompt format [--write] [PATH]...");
+        console.log("Usage: ripari format [--write] [PATH]...");
         console.log("");
         console.log("Formatting options:");
         console.log("        --write               Write formatted files to disk");

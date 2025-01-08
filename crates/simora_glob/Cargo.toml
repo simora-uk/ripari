@@ -1,5 +1,5 @@
 [package]
-description = "Glob pattern matching for simora-prompt"
+description = "Glob pattern matching for ripari"
 edition     = "2021"
 license     = "MIT"
 name        = "simora_glob"
