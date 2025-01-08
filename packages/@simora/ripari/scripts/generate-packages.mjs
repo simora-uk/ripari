@@ -70,21 +70,6 @@ function copyBinaryToNativePackage(platform, arch) {
 	fs.chmodSync(binaryTarget, 0o755);
 }
 
-function updateWasmPackage(target) {
-	const packageName = `@simora/wasm-${target}`;
-	const packageRoot = resolve(PACKAGES_ROOT, `wasm-${target}`);
-
-	const manifestPath = resolve(packageRoot, "package.json");
-	const manifest = JSON.parse(fs.readFileSync(manifestPath).toString("utf-8"));
-
-	const { version } = rootManifest;
-	manifest.name = packageName;
-	manifest.version = version;
-
-	console.log(`Update manifest ${manifestPath}`);
-	fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-}
-
 function writeManifest(packagePath) {
 	const manifestPath = resolve(PACKAGES_ROOT, packagePath, "package.json");
 
@@ -109,11 +94,6 @@ function writeManifest(packagePath) {
 
 const PLATFORMS = ["win32-%s", "darwin-%s", "linux-%s", "linux-%s-musl"];
 const ARCHITECTURES = ["x64", "arm64"];
-const WASM_TARGETS = ["bundler", "nodejs", "web"];
-
-for (const target of WASM_TARGETS) {
-	updateWasmPackage(target);
-}
 
 for (const platform of PLATFORMS) {
 	for (const arch of ARCHITECTURES) {
@@ -122,4 +102,3 @@ for (const platform of PLATFORMS) {
 }
 
 writeManifest("ripari");
-writeManifest("backend-jsonrpc");

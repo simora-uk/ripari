@@ -47,12 +47,12 @@ if (binName) {
 		binPath = require.resolve(binName);
 	} catch {
 		console.warn(
-			`The Biome CLI postinstall script failed to resolve the binary file "${binName}". Running Biome from the npm package will probably not work correctly.`,
+			`The Ripari CLI postinstall script failed to resolve the binary file "${binName}". Running Ripari from the npm package will probably not work correctly.`,
 		);
 	}
 } else {
 	console.warn(
-		"The Biome CLI package doesn't ship with prebuilt binaries for your platform yet. " +
+		"The Ripari CLI package doesn't ship with prebuilt binaries for your platform yet. " +
 			"You can still use the CLI by cloning the simora/ripari repo from GitHub, " +
 			"and follow the instructions there to build the CLI for your platform.",
 	);

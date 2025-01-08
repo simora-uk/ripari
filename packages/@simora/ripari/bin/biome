@@ -36,10 +36,10 @@ const PLATFORMS = {
 	},
 };
 if (env.ROME_BINARY) {
-	console.warn(`[WARN] The environment variable "ROME_BINARY" is deprecated. Use "BIOME_BINARY" instead.`)
+	console.warn(`[WARN] The environment variable "ROME_BINARY" is deprecated. Use "RIPARI_BINARY" instead.`)
 }
 
-const binPath = env.BIOME_BINARY || env.ROME_BINARY ||
+const binPath = env.RIPARI_BINARY || env.ROME_BINARY ||
 	(platform === "linux" && isMusl()
 		? PLATFORMS?.["linux-musl"]?.[arch]
 		: PLATFORMS?.[platform]?.[arch]
@@ -71,7 +71,7 @@ if (binPath) {
 	process.exitCode = result.status;
 } else {
 	console.error(
-		"The Biome CLI package doesn't ship with prebuilt binaries for your platform yet. " +
+		"The Ripari CLI package doesn't ship with prebuilt binaries for your platform yet. " +
 			"You can still use the CLI by cloning the ripari/tools repo from GitHub, " +
 			"and follow the instructions there to build the CLI for your platform.",
 	);

@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/simora/resources/main/svg/slogan-dark-transparent.svg">
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/simora/resources/main/svg/slogan-light-transparent.svg">
-    <img alt="Shows the banner of Biome, with its logo and the phrase 'Biome - Toolchain of the web'." src="https://raw.githubusercontent.com/simora/resources/main/svg/slogan-light-transparent.svg" width="700">
+    <img alt="Shows the banner of Ripari, with its logo and the phrase 'Ripari - Toolchain of the web'." src="https://raw.githubusercontent.com/simora/resources/main/svg/slogan-light-transparent.svg" width="700">
   </picture>
 
   <br>
@@ -37,14 +37,14 @@
 
 <br>
 
-**Biome** is a performant toolchain for web projects, it aims to provide developer tools to maintain the health of said projects.
+**Ripari** is a performant toolchain for web projects, it aims to provide developer tools to maintain the health of said projects.
 
-**Biome is a [fast formatter](./benchmark#formatting)** for _JavaScript_, _TypeScript_, _JSX_, _JSON_, _CSS_ and _GraphQL_ that scores **[97% compatibility with _Prettier_](https://console.algora.io/challenges/prettier)**.
+**Ripari is a [fast formatter](./benchmark#formatting)** for _JavaScript_, _TypeScript_, _JSX_, _JSON_, _CSS_ and _GraphQL_ that scores **[97% compatibility with _Prettier_](https://console.algora.io/challenges/prettier)**.
 
-**Biome is a [performant linter](https://github.com/simora-uk/ripari/tree/main/benchmark#linting)** for _JavaScript_, _TypeScript_, _JSX_, _CSS_ and _GraphQL_ that features **[more than 270 rules](https://pashley.org/linter/rules/)** from ESLint, typescript-eslint, and [other sources](https://github.com/simora-uk/ripari/discussions/3).
+**Ripari is a [performant linter](https://github.com/simora-uk/ripari/tree/main/benchmark#linting)** for _JavaScript_, _TypeScript_, _JSX_, _CSS_ and _GraphQL_ that features **[more than 270 rules](https://pashley.org/linter/rules/)** from ESLint, typescript-eslint, and [other sources](https://github.com/simora-uk/ripari/discussions/3).
 It **outputs detailed and contextualized diagnostics** that help you to improve your code and become a better programmer!
 
-**Biome** is designed from the start to be used [interactively within an editor](https://pashley.org/guides/integrate-in-editor/).
+**Ripari** is designed from the start to be used [interactively within an editor](https://pashley.org/guides/integrate-in-editor/).
 It can format and lint malformed code as you are writing it.
 
 ### Installation
@@ -69,28 +69,28 @@ npx @simora/ripari check --write ./src
 npx @simora/ripari ci ./src
 ```
 
-If you want to give Biome a run without installing it, use the [online playground](https://pashley.org/playground/), compiled to WebAssembly.
+If you want to give Ripari a run without installing it, use the [online playground](https://pashley.org/playground/), compiled to WebAssembly.
 
 ## Documentation
 
-Check out our [homepage][simora] to learn more about Biome,
-or directly head to the [Getting Started guide][getting-started] to start using Biome.
+Check out our [homepage][simora] to learn more about Ripari,
+or directly head to the [Getting Started guide][getting-started] to start using Ripari.
 
-## More about Biome
+## More about Ripari
 
-**Biome** has sane defaults and it doesn't require configuration.
+**Ripari** has sane defaults and it doesn't require configuration.
 
-**Biome** aims to support [all main languages][language-support] of modern web development.
+**Ripari** aims to support [all main languages][language-support] of modern web development.
 
-**Biome** [doesn't require Node.js](https://pashley.org/guides/manual-installation/) to function.
+**Ripari** [doesn't require Node.js](https://pashley.org/guides/manual-installation/) to function.
 
-**Biome** has first-class LSP support, with a sophisticated parser that represents the source text in full fidelity and top-notch error recovery.
+**Ripari** has first-class LSP support, with a sophisticated parser that represents the source text in full fidelity and top-notch error recovery.
 
-**Biome** unifies functionality that has previously been separate tools. Building upon a shared base allows us to provide a cohesive experience for processing code, displaying errors, parallelize work, caching, and configuration.
+**Ripari** unifies functionality that has previously been separate tools. Building upon a shared base allows us to provide a cohesive experience for processing code, displaying errors, parallelize work, caching, and configuration.
 
 Read more about our [project philosophy][ripari-philosophy].
 
-**Biome** is [MIT licensed](https://github.com/simora-uk/ripari/tree/main/LICENSE-MIT) or [Apache 2.0 licensed](https://github.com/simora-uk/ripari/tree/main/LICENSE-APACHE) and moderated under the [Contributor Covenant Code of Conduct](https://github.com/simora-uk/ripari/tree/main/CODE_OF_CONDUCT.md).
+**Ripari** is [MIT licensed](https://github.com/simora-uk/ripari/tree/main/LICENSE-MIT) or [Apache 2.0 licensed](https://github.com/simora-uk/ripari/tree/main/LICENSE-APACHE) and moderated under the [Contributor Covenant Code of Conduct](https://github.com/simora-uk/ripari/tree/main/CODE_OF_CONDUCT.md).
 
 ## Funding
 
@@ -100,7 +100,7 @@ You can fund the project in different ways
 
 You can sponsor or fund the project via [Open collective](https://opencollective.com/ripari) or [GitHub sponsors](https://github.com/sponsors/simora)
 
-Biome offers a simple sponsorship program that allows companies to get visibility and recognition among various developers.
+Ripari offers a simple sponsorship program that allows companies to get visibility and recognition among various developers.
 
 ### Issue funding
 

@@ -16,7 +16,7 @@
   "author": "Emanuele Stoppa",
   "license": "MIT OR Apache-2.0",
   "bugs": "https://github.com/simora-uk/ripari/issues",
-  "description": "Biome is a toolchain for the web: formatter, linter and more",
+  "description": "Ripari is a toolchain for the web: formatter, linter and more",
   "files": [
     "bin/ripari",
     "scripts/postinstall.js",

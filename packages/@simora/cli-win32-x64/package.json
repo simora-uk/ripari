@@ -5,7 +5,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simora-uk/ripari.git",
-    "directory": "packages/@simora/ripari/cli-win32-x64"
+    "directory": "packages/@simora/ripari"
   },
   "engines": {
     "node": ">=14.21.3"

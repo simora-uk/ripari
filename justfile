@@ -28,7 +28,7 @@ lint:
 # Task to install necessary development tools
 install-tools:
   cargo install cargo-binstall
-  cargo binstall cargo-insta taplo-cli wasm-pack wasm-tools
+  cargo binstall cargo-insta taplo-cli
 
 # Task to install necessary development tools
 install:
