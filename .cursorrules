@@ -4,7 +4,7 @@ You keep making the same mistakes, use these rules:
 - in `.rs` files you MUST semi-colons to end lines.
 
 ## Project Overview
-- **Project Name**: Ripari by Simora  (ripari , @simora/ripari)
+- **Project Name**: Ripari by Simora  (ripari , @simora-uk/ripari)
 - **Purpose**: A command-line interface (CLI) tool for managing and formatting Markdown files with modular commands.
 
 By Simora, the **Ripari**  CLI application is a modular, extensible command-line interface designed to streamline and manage Markdown formatting and linting tasks. The application achieves this by providing individual commands encapsulated in a flexible architecture, making it easy to add new functionality or modify existing commands.

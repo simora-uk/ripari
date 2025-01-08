@@ -1,5 +1,5 @@
 {
-  "name": "@simora/ripari",
+  "name": "@simora-uk-uk/ripari",
   "version": "1.2.3",
   "bin": {
     "ripari": "bin/ripari"
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simora-uk/ripari.git",
-    "directory": "packages/@simora/ripari"
+    "directory": "packages/@simora-uk/ripari"
   },
   "author": "Emanuele Stoppa",
   "license": "MIT OR Apache-2.0",
@@ -50,13 +50,13 @@
     "provenance": true
   },
   "optionalDependencies": {
-    "@simora/cli-win32-x64": "1.2.3",
-    "@simora/cli-win32-arm64": "1.2.3",
-    "@simora/cli-darwin-x64": "1.2.3",
-    "@simora/cli-darwin-arm64": "1.2.3",
-    "@simora/cli-linux-x64": "1.2.3",
-    "@simora/cli-linux-arm64": "1.2.3",
-    "@simora/cli-linux-x64-musl": "1.2.3",
-    "@simora/cli-linux-arm64-musl": "1.2.3"
+    "@simora-uk-uk/cli-win32-x64": "1.2.3",
+    "@simora-uk-uk/cli-win32-arm64": "1.2.3",
+    "@simora-uk-uk/cli-darwin-x64": "1.2.3",
+    "@simora-uk-uk/cli-darwin-arm64": "1.2.3",
+    "@simora-uk-uk/cli-linux-x64": "1.2.3",
+    "@simora-uk-uk/cli-linux-arm64": "1.2.3",
+    "@simora-uk-uk/cli-linux-x64-musl": "1.2.3",
+    "@simora-uk-uk/cli-linux-arm64-musl": "1.2.3"
   }
 }

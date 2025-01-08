@@ -29,30 +29,30 @@ importers:
         specifier: 3.3.3
         version: 3.3.3
 
-  packages/@simora/backend-jsonrpc:
+  packages/@simora-uk/backend-jsonrpc:
     optionalDependencies:
-      '@simora/cli-darwin-arm64':
+      '@simora-uk/cli-darwin-arm64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-darwin-x64':
+      '@simora-uk/cli-darwin-x64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-arm64':
+      '@simora-uk/cli-linux-arm64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-arm64-musl':
+      '@simora-uk/cli-linux-arm64-musl':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-x64':
+      '@simora-uk/cli-linux-x64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-x64-musl':
+      '@simora-uk/cli-linux-x64-musl':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-win32-arm64':
+      '@simora-uk/cli-win32-arm64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-win32-x64':
+      '@simora-uk/cli-win32-x64':
         specifier: 1.2.3
         version: 1.2.3
     devDependencies:
@@ -69,58 +69,58 @@ importers:
         specifier: 1.6.0
         version: 1.6.0(@types/node@20.17.12)(happy-dom@15.11.7)
 
-  packages/@simora/ripari:
+  packages/@simora-uk/ripari:
     optionalDependencies:
-      '@simora/cli-darwin-arm64':
+      '@simora-uk/cli-darwin-arm64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-darwin-x64':
+      '@simora-uk/cli-darwin-x64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-arm64':
+      '@simora-uk/cli-linux-arm64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-arm64-musl':
+      '@simora-uk/cli-linux-arm64-musl':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-x64':
+      '@simora-uk/cli-linux-x64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-linux-x64-musl':
+      '@simora-uk/cli-linux-x64-musl':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-win32-arm64':
+      '@simora-uk/cli-win32-arm64':
         specifier: 1.2.3
         version: 1.2.3
-      '@simora/cli-win32-x64':
+      '@simora-uk/cli-win32-x64':
         specifier: 1.2.3
         version: 1.2.3
 
-  packages/@simora/cli-darwin-arm64: {}
+  packages/@simora-uk/cli-darwin-arm64: {}
 
-  packages/@simora/cli-darwin-x64: {}
+  packages/@simora-uk/cli-darwin-x64: {}
 
-  packages/@simora/cli-linux-arm64: {}
+  packages/@simora-uk/cli-linux-arm64: {}
 
-  packages/@simora/cli-linux-arm64-musl: {}
+  packages/@simora-uk/cli-linux-arm64-musl: {}
 
-  packages/@simora/cli-linux-x64: {}
+  packages/@simora-uk/cli-linux-x64: {}
 
-  packages/@simora/cli-linux-x64-musl: {}
+  packages/@simora-uk/cli-linux-x64-musl: {}
 
-  packages/@simora/cli-win32-arm64: {}
+  packages/@simora-uk/cli-win32-arm64: {}
 
-  packages/@simora/cli-win32-x64: {}
+  packages/@simora-uk/cli-win32-x64: {}
 
-  packages/@simora/js-api:
+  packages/@simora-uk/js-api:
     devDependencies:
-      '@simora/wasm-bundler':
+      '@simora-uk/wasm-bundler':
         specifier: link:../wasm-bundler
         version: link:../wasm-bundler
-      '@simora/wasm-nodejs':
+      '@simora-uk/wasm-nodejs':
         specifier: link:../wasm-nodejs
         version: link:../wasm-nodejs
-      '@simora/wasm-web':
+      '@simora-uk/wasm-web':
         specifier: link:../wasm-web
         version: link:../wasm-web
       typescript:
@@ -133,11 +133,11 @@ importers:
         specifier: 1.6.0
         version: 1.6.0(@types/node@20.17.12)(happy-dom@15.11.7)
 
-  packages/@simora/wasm-bundler: {}
+  packages/@simora-uk/wasm-bundler: {}
 
-  packages/@simora/wasm-nodejs: {}
+  packages/@simora-uk/wasm-nodejs: {}
 
-  packages/@simora/wasm-web: {}
+  packages/@simora-uk/wasm-web: {}
 
   packages/aria-data:
     dependencies:
@@ -179,49 +179,49 @@ packages:
     resolution: {integrity: sha512-acGdbYSfp2WheJoJm/EBBBLh/ID8KDc64ISZ9DYtBmC8/Q204PZJLHyzeB5qMzJ5trcOkybd78M4x2KWsUq++A==}
     engines: {node: '>=6.9.0'}
 
-  '@simora/cli-darwin-arm64@1.2.3':
+  '@simora-uk/cli-darwin-arm64@1.2.3':
     resolution: {integrity: sha512-bFBsPWrNvkdKrNCYeAp+xo2HecOGPAy9WyNyB/jKnnedgzl4W4Hb9ZMzYNbf8dMCGmUdSavlYHiR01QaYR58cw==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [darwin]
 
-  '@simora/cli-darwin-x64@1.2.3':
+  '@simora-uk/cli-darwin-x64@1.2.3':
     resolution: {integrity: sha512-ngYBh/+bEedqkSevPVhLP4QfVPCpb+4BBe2p7Xs32dBgs7rh9nY2AIYUL6BgLw1JVXV8GlpKmb/hNiuIxfPfZg==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [darwin]
 
-  '@simora/cli-linux-arm64-musl@1.2.3':
+  '@simora-uk/cli-linux-arm64-musl@1.2.3':
     resolution: {integrity: sha512-v665Ct9WCRjGa8+kTr0CzApU0+XXtRgwmzIf1SeKSGAv+2scAlW6JR5PMFo6FzqqZ64Po79cKODKf3/AAmECqA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
 
-  '@simora/cli-linux-arm64@1.2.3':
+  '@simora-uk/cli-linux-arm64@1.2.3':
     resolution: {integrity: sha512-fJIW0+LYujdjUgJJuwesP4EjIBl/N/TcOX3IvIHJQNsAqvV2CHIogsmA94BPG6jZATS4Hi+xv4SkBBQSt1N4/g==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
 
-  '@simora/cli-linux-x64-musl@1.2.3':
+  '@simora-uk/cli-linux-x64-musl@1.2.3':
     resolution: {integrity: sha512-gEhi/jSBhZ2m6wjV530Yy8+fNqG8PAinM3oV7CyO+6c3CEh16Eizm21uHVsyVBEB6RIM8JHIl6AGYCv6Q6Q9Tg==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
 
-  '@simora/cli-linux-x64@1.2.3':
+  '@simora-uk/cli-linux-x64@1.2.3':
     resolution: {integrity: sha512-lRCJv/Vi3Vlwmbd6K+oQ0KhLHMAysN8lXoCI7XeHlxaajk06u7G+UsFSO01NAs5iYuWKmVZjmiOzJ0OJmGsMwg==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
 
-  '@simora/cli-win32-arm64@1.2.3':
+  '@simora-uk/cli-win32-arm64@1.2.3':
     resolution: {integrity: sha512-tlbhLk+WXZmgwoIKwHIHEBZUwxml7bRJgk0X2sPyNR3S93cdRq6XulAZRQJ17FYGGzWne0fgrXBKpl7l4M87Hg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [win32]
 
-  '@simora/cli-win32-x64@1.2.3':
+  '@simora-uk/cli-win32-x64@1.2.3':
     resolution: {integrity: sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
@@ -1704,28 +1704,28 @@ snapshots:
       chalk: 2.4.2
       js-tokens: 4.0.0
 
-  '@simora/cli-darwin-arm64@1.2.3':
+  '@simora-uk/cli-darwin-arm64@1.2.3':
     optional: true
 
-  '@simora/cli-darwin-x64@1.2.3':
+  '@simora-uk/cli-darwin-x64@1.2.3':
     optional: true
 
-  '@simora/cli-linux-arm64-musl@1.2.3':
+  '@simora-uk/cli-linux-arm64-musl@1.2.3':
     optional: true
 
-  '@simora/cli-linux-arm64@1.2.3':
+  '@simora-uk/cli-linux-arm64@1.2.3':
     optional: true
 
-  '@simora/cli-linux-x64-musl@1.2.3':
+  '@simora-uk/cli-linux-x64-musl@1.2.3':
     optional: true
 
-  '@simora/cli-linux-x64@1.2.3':
+  '@simora-uk/cli-linux-x64@1.2.3':
     optional: true
 
-  '@simora/cli-win32-arm64@1.2.3':
+  '@simora-uk/cli-win32-arm64@1.2.3':
     optional: true
 
-  '@simora/cli-win32-x64@1.2.3':
+  '@simora-uk/cli-win32-x64@1.2.3':
     optional: true
 
   '@dprint/darwin-arm64@0.48.0':

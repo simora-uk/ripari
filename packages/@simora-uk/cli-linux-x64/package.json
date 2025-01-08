@@ -1,20 +1,23 @@
 {
-  "name": "@simora/cli-win32-x64",
+  "name": "@simora-uk-uk/cli-linux-x64",
   "version": "1.2.3",
   "license": "MIT OR Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simora-uk/ripari.git",
-    "directory": "packages/@simora/ripari"
+    "directory": "packages/@simora-uk/ripari/cli-linux-x64"
   },
   "engines": {
     "node": ">=14.21.3"
   },
   "homepage": "https://pashley.org",
   "os": [
-    "win32"
+    "linux"
   ],
   "cpu": [
     "x64"
+  ],
+  "libc": [
+    "glibc"
   ]
 }

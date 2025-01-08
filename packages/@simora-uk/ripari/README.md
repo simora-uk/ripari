@@ -19,8 +19,8 @@
   [ci-url]: https://github.com/simora-uk/ripari/actions/workflows/main.yml
   [discord-badge]: https://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=60a5fa
   [discord-url]: https://pashley.org/chat
-  [npm-badge]: https://badgen.net/npm/v/@simora/ripari?icon=npm&color=60a5fa&label=%40simora%2Fripari
-  [npm-url]: https://www.npmjs.com/package/@simora/ripari/v/latest
+  [npm-badge]: https://badgen.net/npm/v/@simora-uk/ripari?icon=npm&color=60a5fa&label=%40simora%2Fripari
+  [npm-url]: https://www.npmjs.com/package/@simora-uk/ripari/v/latest
   [vscode-badge]: https://badgen.net/vs-marketplace/v/simora.ripari?label=vscode&icon=visualstudio&color=60a5fa
   [vscode-url]: https://marketplace.visualstudio.com/items?itemName=simora.ripari
   [open-vsx-badge]: https://badgen.net/open-vsx/version/simora/ripari?label=open-vsx&color=60a5fa
@@ -30,7 +30,7 @@
 
 <!-- Insert new entries lexicographically by language code.
      For example given below is the same order as these files appear on page:
-     https://github.com/simora-uk/ripari/tree/main/packages/@simora/ripari -->
+     https://github.com/simora-uk/ripari/tree/main/packages/@simora-uk/ripari -->
 
   [हिन्दी](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.hi.md) | English | [Français](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.fr.md) | [繁體中文](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.zh-TW.md) | [简体中文](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.zh-CN.md) | [日本語](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.ja.md) | [Português do Brasil](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.pt-BR.md) | [한국어](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.kr.md) | [Русский](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.ru.md) | [Українська](https://github.com/simora-uk/ripari/blob/main/packages/%40simora/ripari/README.uk.md)
 </div>
@@ -50,23 +50,23 @@ It can format and lint malformed code as you are writing it.
 ### Installation
 
 ```shell
-npm install --save-dev --save-exact @simora/ripari
+npm install --save-dev --save-exact @simora-uk/ripari
 ```
 
 ### Usage
 
 ```shell
 # format files
-npx @simora/ripari format --write ./src
+npx @simora-uk/ripari format --write ./src
 
 # lint files and apply the safe fixes
-npx @simora/ripari lint --write ./src
+npx @simora-uk/ripari lint --write ./src
 
 # run format, lint, etc. and apply the safe fixes
-npx @simora/ripari check --write ./src
+npx @simora-uk/ripari check --write ./src
 
 # check all files against format, lint, etc. in CI environments
-npx @simora/ripari ci ./src
+npx @simora-uk/ripari ci ./src
 ```
 
 If you want to give Ripari a run without installing it, use the [online playground](https://pashley.org/playground/), compiled to WebAssembly.

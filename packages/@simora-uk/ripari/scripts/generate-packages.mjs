@@ -20,7 +20,7 @@ function copyBinaryToNativePackage(platform, arch) {
 	const os = platform.split("-")[0];
 	const buildName = getName(platform, arch);
 	const packageRoot = resolve(PACKAGES_ROOT, buildName);
-	const packageName = `@simora/${buildName}`;
+	const packageName = `@simora-uk/${buildName}`;
 
 	// Update the package.json manifest
 	const { version, license, repository, engines, homepage } = rootManifest;
@@ -79,7 +79,7 @@ function writeManifest(packagePath) {
 
 	const nativePackages = PLATFORMS.flatMap((platform) =>
 		ARCHITECTURES.map((arch) => [
-			`@simora/${getName(platform, arch)}`,
+			`@simora-uk/${getName(platform, arch)}`,
 			rootManifest.version,
 		]),
 	);

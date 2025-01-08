@@ -2,17 +2,17 @@
 [packages.cli]
 changelog = "CHANGELOG.md"
 versioned_files = [
-  "packages/@simora/ripari/package.json",
+  "packages/@simora-uk/ripari/package.json",
   # Platform binaries
-  "packages/@simora/cli-darwin-arm64/package.json",
-  "packages/@simora/cli-darwin-x64/package.json",
-  "packages/@simora/cli-linux-arm64/package.json",
-  "packages/@simora/cli-linux-arm64-musl/package.json",
-  "packages/@simora/cli-linux-x64/package.json",
-  "packages/@simora/cli-linux-x64-musl/package.json",
-  "packages/@simora/cli-win32-arm64/package.json",
-  "packages/@simora/cli-win32-x64/package.json",
-  "packages/@simora/cli-win32-x64/package.json",
+  "packages/@simora-uk/cli-darwin-arm64/package.json",
+  "packages/@simora-uk/cli-darwin-x64/package.json",
+  "packages/@simora-uk/cli-linux-arm64/package.json",
+  "packages/@simora-uk/cli-linux-arm64-musl/package.json",
+  "packages/@simora-uk/cli-linux-x64/package.json",
+  "packages/@simora-uk/cli-linux-x64-musl/package.json",
+  "packages/@simora-uk/cli-win32-arm64/package.json",
+  "packages/@simora-uk/cli-win32-x64/package.json",
+  "packages/@simora-uk/cli-win32-x64/package.json",
 ]
 
 
@@ -108,7 +108,7 @@ template = "This PR was automatically created via workflow. Merging it will crea
 name = "release"
 
 [[workflows.steps]]
-# The script will add most up-to-date optional dependencies to the manifest of @simora/ripari
+# The script will add most up-to-date optional dependencies to the manifest of @simora-uk/ripari
 command = "node scripts/generate-packages.mjs"
 type    = "Command"
 

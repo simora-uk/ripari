@@ -1,11 +1,11 @@
 {
-  "name": "@simora/cli-darwin-x64",
+  "name": "@simora-uk-uk/cli-darwin-arm64",
   "version": "1.2.3",
   "license": "MIT OR Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simora-uk/ripari.git",
-    "directory": "packages/@simora/ripari/cli-darwin-x64"
+    "directory": "packages/@simora-uk/ripari/cli-darwin-arm64"
   },
   "engines": {
     "node": ">=14.21.3"
@@ -15,6 +15,6 @@
     "darwin"
   ],
   "cpu": [
-    "x64"
+    "arm64"
   ]
 }

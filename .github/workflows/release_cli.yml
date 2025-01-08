@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - packages/@simora/ripari/package.json
+      - packages/@simora-uk/ripari/package.json
 
 jobs:
   check:
@@ -32,7 +32,7 @@ jobs:
         id: version
         with:
           diff-search: true
-          file-name: packages/@simora/ripari/package.json
+          file-name: packages/@simora-uk/ripari/package.json
 
       - name: Set version name
         if: steps.version.outputs.changed == 'true'
@@ -44,7 +44,7 @@ jobs:
         if: env.nightly == 'true'
         run: |
           echo "prerelease=true" >> $GITHUB_ENV
-          echo "version=$(node packages/@simora/ripari/scripts/update-nightly-version.mjs)" >> $GITHUB_ENV
+          echo "version=$(node packages/@simora-uk/ripari/scripts/update-nightly-version.mjs)" >> $GITHUB_ENV
 
   build:
     strategy:
@@ -177,35 +177,35 @@ jobs:
 
       - name: Set release infos
         if: needs.build.outputs.prerelease == 'true'
-        run: node packages/@simora/ripari/scripts/update-nightly-version.mjs
+        run: node packages/@simora-uk/ripari/scripts/update-nightly-version.mjs
       - name: Generate npm packages
-        run: node packages/@simora/ripari/scripts/generate-packages.mjs
+        run: node packages/@simora-uk/ripari/scripts/generate-packages.mjs
 
       - name: Publish npm packages as latest
-        run: for package in packages/@simora/*; do if [ $package != "packages/@simora/js-api" ]; then npm publish $package --tag latest --access public --provenance; fi; done
+        run: for package in packages/@simora-uk/*; do if [ $package != "packages/@simora-uk/js-api" ]; then npm publish $package --tag latest --access public --provenance; fi; done
         if: needs.build.outputs.prerelease != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish npm packages as nightly
-        run: for package in packages/@simora/*; do if [ $package != "packages/@simora/js-api" ]; then npm publish $package --tag nightly --access public --provenance; fi; done
+        run: for package in packages/@simora-uk/*; do if [ $package != "packages/@simora-uk/js-api" ]; then npm publish $package --tag nightly --access public --provenance; fi; done
         if: needs.build.outputs.prerelease == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Extract changelog
-        run: |
-          bash scripts/print-changelog.sh ${{ needs.build.outputs.version }} >| ${{ github.workspace }}/RELEASE_NOTES
-      - name: Create GitHub release and tag
-        uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          name: CLI v${{ needs.build.outputs.version }}
-          tag_name: cli/v${{ needs.build.outputs.version }}
-          draft: false
-          prerelease: ${{ needs.build.outputs.prerelease == 'true' }}
-          body_path: ${{ github.workspace }}/RELEASE_NOTES
-          files: |
-            ripari-*
-          fail_on_unmatched_files: true
-          generate_release_notes: true
+      # - name: Extract changelog
+      #   run: |
+      #     bash scripts/print-changelog.sh ${{ needs.build.outputs.version }} >| ${{ github.workspace }}/RELEASE_NOTES
+      # - name: Create GitHub release and tag
+      #   uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     name: CLI v${{ needs.build.outputs.version }}
+      #     tag_name: cli/v${{ needs.build.outputs.version }}
+      #     draft: false
+      #     prerelease: ${{ needs.build.outputs.prerelease == 'true' }}
+      #     body_path: ${{ github.workspace }}/RELEASE_NOTES
+      #     files: |
+      #       ripari-*
+      #     fail_on_unmatched_files: true
+      #     generate_release_notes: true

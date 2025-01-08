@@ -1,11 +1,11 @@
 {
-  "name": "@simora/cli-linux-x64",
+  "name": "@simora-uk-uk/cli-linux-arm64",
   "version": "1.2.3",
   "license": "MIT OR Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simora-uk/ripari.git",
-    "directory": "packages/@simora/ripari/cli-linux-x64"
+    "directory": "packages/@simora-uk/ripari/cli-linux-arm64"
   },
   "engines": {
     "node": ">=14.21.3"
@@ -15,7 +15,7 @@
     "linux"
   ],
   "cpu": [
-    "x64"
+    "arm64"
   ],
   "libc": [
     "glibc"
