@@ -2,8 +2,8 @@
 codegen               = "run -p xtask_codegen --"
 codegen-bindings      = "run -p xtask_codegen --features schema -- bindings"
 codegen-configuration = "run -p xtask_codegen --features configuration -- configuration"
-ripari-cli     = "run -p ripari_cli --release --"
-ripari-cli-dev = "run -p ripari_cli --"
+ripari-cli            = "run -p ripari_cli --release --"
+ripari-cli-dev        = "run -p ripari_cli --"
 # updates a newly created crate
 codegen-license = "run -p xtask_codegen --features license -- license"
 codegen-migrate = "run -p xtask_codegen --features configuration -- migrate-eslint"
