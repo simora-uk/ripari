@@ -51,8 +51,8 @@ jobs:
   #         echo "prerelease=true" >> $GITHUB_ENV
   #         echo "version=$(node packages/@simora-uk/ripari/scripts/update-nightly-version.mjs)" >> $GITHUB_ENV
 
-  mock_version:
-    name: Check version
+  check:
+    name: Mock Check version
     runs-on: ubuntu-latest
     outputs:
       version: ${{ env.version }}
@@ -101,7 +101,7 @@ jobs:
     name: Package ${{ matrix.code-target }}
     runs-on: ${{ matrix.os }}
 
-    needs: mock_version
+    needs: check
     if: needs.check.outputs.version_changed == 'true' || needs.check.outputs.nightly == 'true'
     env:
       version: ${{ needs.check.outputs.version }}
