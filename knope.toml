@@ -24,7 +24,7 @@ versioned_files = ["crates/simora_glob/Cargo.toml"]
 
 # Workflow for bumping versions
 [[workflows]]
-name = "bump-version"
+name = "prepare-release"
 
 [[workflows.steps]]
 type = "PrepareRelease"
@@ -57,3 +57,9 @@ template = "This PR contains version updates for the upcoming pre-release stage.
 [github]
 owner = "simora-uk"
 repo = "ripari"
+
+[prepare-release]
+bump = "minor"  # Options: "patch", "minor", "major"
+
+[versioning]
+starting-version = "1.0.0"  # Optional: Define a starting version if tags are missing
