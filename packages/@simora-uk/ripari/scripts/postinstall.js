@@ -19,20 +19,20 @@ function isMusl() {
 
 const PLATFORMS = {
 	win32: {
-		x64: "@simora-uk-uk/cli-win32-x64/ripari.exe",
-		arm64: "@simora-uk-uk/cli-win32-arm64/ripari.exe",
+		x64: "@simora-uk/cli-win32-x64/ripari.exe",
+		arm64: "@simora-uk/cli-win32-arm64/ripari.exe",
 	},
 	darwin: {
-		x64: "@simora-uk-uk/cli-darwin-x64/ripari",
-		arm64: "@simora-uk-uk/cli-darwin-arm64/ripari",
+		x64: "@simora-uk/cli-darwin-x64/ripari",
+		arm64: "@simora-uk/cli-darwin-arm64/ripari",
 	},
 	linux: {
-		x64: "@simora-uk-uk/cli-linux-x64/ripari",
-		arm64: "@simora-uk-uk/cli-linux-arm64/ripari",
+		x64: "@simora-uk/cli-linux-x64/ripari",
+		arm64: "@simora-uk/cli-linux-arm64/ripari",
 	},
 	"linux-musl": {
-		x64: "@simora-uk-uk/cli-linux-x64-musl/ripari",
-		arm64: "@simora-uk-uk/cli-linux-arm64-musl/ripari",
+		x64: "@simora-uk/cli-linux-x64-musl/ripari",
+		arm64: "@simora-uk/cli-linux-arm64-musl/ripari",
 	},
 };
 

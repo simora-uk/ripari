@@ -1,5 +1,5 @@
 {
-  "name": "@simora-uk-uk/ripari",
+  "name": "@simora-uk/ripari",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,7 @@
     "ci": "cargo ripari-cli-dev ci"
   },
   "keywords": [],
-  "author": "Simora Developers and Contributors",
+  "author": "Simeon Pashley",
   "license": "MIT OR Apache-2.0",
   "packageManager": "pnpm@9.15.3"
 }

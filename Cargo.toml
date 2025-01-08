@@ -122,7 +122,7 @@ verbose_file_reads                = "warn"
 #mem_forget                      = "warn"
 
 [workspace.package]
-authors    = ["Simora Developers and Contributors"]
+authors    = ["Simeon Pashley"]
 categories = ["development-tools", "web-programming"]
 edition    = "2021"
 homepage   = "https://pashley.org/"

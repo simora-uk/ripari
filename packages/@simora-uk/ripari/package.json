@@ -1,5 +1,5 @@
 {
-  "name": "@simora-uk-uk/ripari",
+  "name": "@simora-uk/ripari",
   "version": "1.2.3",
   "bin": {
     "ripari": "bin/ripari"
@@ -13,50 +13,43 @@
     "url": "git+https://github.com/simora-uk/ripari.git",
     "directory": "packages/@simora-uk/ripari"
   },
-  "author": "Emanuele Stoppa",
+  "author": "Simeon Pashley",
   "license": "MIT OR Apache-2.0",
   "bugs": "https://github.com/simora-uk/ripari/issues",
-  "description": "Ripari is a toolchain for the web: formatter, linter and more",
+  "description": "Ripari is a ChatGPT output: formatter, linter and more",
   "files": [
     "bin/ripari",
     "scripts/postinstall.js",
-    "configuration_schema.json",
     "README.md",
-    "LICENSE-APACHE",
-    "LICENSE-MIT",
-    "ROME-LICENSE-MIT"
+    "LICENSE.md"
   ],
   "keywords": [
     "format",
     "lint",
     "toolchain",
-    "JavaScript",
-    "TypeScript",
-    "JSON",
-    "JSONC",
-    "JSX",
-    "TSX",
-    "CSS",
-    "GraphQL"
+    "chatgpt",
+    "Markdown"
   ],
   "engines": {
     "node": ">=14.21.3"
   },
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/ripari"
-  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/simeonpashley"
+    }
+  ],
   "publishConfig": {
     "provenance": true
   },
   "optionalDependencies": {
-    "@simora-uk-uk/cli-win32-x64": "1.2.3",
-    "@simora-uk-uk/cli-win32-arm64": "1.2.3",
-    "@simora-uk-uk/cli-darwin-x64": "1.2.3",
-    "@simora-uk-uk/cli-darwin-arm64": "1.2.3",
-    "@simora-uk-uk/cli-linux-x64": "1.2.3",
-    "@simora-uk-uk/cli-linux-arm64": "1.2.3",
-    "@simora-uk-uk/cli-linux-x64-musl": "1.2.3",
-    "@simora-uk-uk/cli-linux-arm64-musl": "1.2.3"
+    "@simora-uk/cli-win32-x64": "1.2.3",
+    "@simora-uk/cli-win32-arm64": "1.2.3",
+    "@simora-uk/cli-darwin-x64": "1.2.3",
+    "@simora-uk/cli-darwin-arm64": "1.2.3",
+    "@simora-uk/cli-linux-x64": "1.2.3",
+    "@simora-uk/cli-linux-arm64": "1.2.3",
+    "@simora-uk/cli-linux-x64-musl": "1.2.3",
+    "@simora-uk/cli-linux-arm64-musl": "1.2.3"
   }
 }
