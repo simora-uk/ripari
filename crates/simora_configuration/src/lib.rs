@@ -1,7 +1,8 @@
 
 mod rules;
 mod types;
-
+pub mod global_config;
+pub use global_config::initialize_global_config; // Export the new function
 pub use rules::{
     HeadingsConfig, HorizontalRulesConfig, PunctuationConfig, RulesConfig, SmartQuotesConfig,
 };
@@ -9,6 +10,7 @@ pub use types::{
     MarkdownFormatterConfig, PartialFilesConfiguration, PartialMarkdownFormatterConfiguration,
     PartialVcsConfiguration,
 };
+
 
 /// Trait for merging configurations
 pub trait Merge {

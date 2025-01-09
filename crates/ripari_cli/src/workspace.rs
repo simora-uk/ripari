@@ -1,7 +1,10 @@
 use crate::diagnostics::CliDiagnostic;
-use simora_configuration::{Merge, PartialMarkdownFormatterConfiguration};
+use simora_configuration::{
+    global_config::{initialize_global_config, GlobalConfig},
+    Merge, PartialMarkdownFormatterConfiguration,
+};
 use std::fs;
-use std::path:: PathBuf;
+use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct Workspace {
@@ -69,7 +72,13 @@ impl Workspace {
     ) -> Result<PartialMarkdownFormatterConfiguration, CliDiagnostic> {
         let configs = self.find_configurations()?;
         if configs.is_empty() {
-            return Ok(PartialMarkdownFormatterConfiguration::default());
+            let default_config = PartialMarkdownFormatterConfiguration::default();
+            initialize_global_config(GlobalConfig {
+                markdown: default_config.markdown.clone(),
+                files: default_config.files.clone(),
+                vcs: default_config.vcs.clone(),
+            });
+            return Ok(default_config);
         }
 
         let mut merged = configs.last().unwrap().clone(); // Start with the most general config
@@ -77,6 +86,13 @@ impl Workspace {
             // Skip the last one since we started with it
             merged.merge_with(config.clone());
         }
+
+        // Initialize global config with merged configuration
+        initialize_global_config(GlobalConfig {
+            markdown: merged.markdown.clone(),
+            files: merged.files.clone(),
+            vcs: merged.vcs.clone(),
+        });
 
         Ok(merged)
     }

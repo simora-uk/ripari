@@ -1,5 +1,9 @@
 use regex::Regex;
-use simora_configuration::{MarkdownFormatterConfig, PartialMarkdownFormatterConfiguration};
+use simora_configuration::{
+    global_config::get_markdown_config, HeadingsConfig, HorizontalRulesConfig,
+    MarkdownFormatterConfig, PartialMarkdownFormatterConfiguration, PunctuationConfig, RulesConfig,
+    SmartQuotesConfig,
+};
 use std::error::Error;
 use std::fmt;
 
@@ -34,7 +38,7 @@ pub trait Formatter {
 /// A basic Markdown formatter
 #[derive(Debug)]
 pub struct MarkdownFormatter {
-    pub config: Option<MarkdownFormatterConfig>,
+    config: Option<MarkdownFormatterConfig>,
 }
 
 impl Default for MarkdownFormatter {
@@ -45,7 +49,26 @@ impl Default for MarkdownFormatter {
 
 impl MarkdownFormatter {
     pub fn new() -> Self {
-        Self::default()
+        let default_config = MarkdownFormatterConfig {
+            enabled: true,
+            rules: RulesConfig {
+                smart_quotes: SmartQuotesConfig { enabled: true },
+                headings: HeadingsConfig {
+                    enabled: true,
+                    remove_emphasis: true,
+                },
+                remove_horizontal_rules: HorizontalRulesConfig { enabled: true },
+                punctuation: PunctuationConfig {
+                    enabled: true,
+                    standardize_dashes: true,
+                    standardize_ellipsis: true,
+                },
+            },
+        };
+
+        Self {
+            config: Some(get_markdown_config().cloned().unwrap_or(default_config)),
+        }
     }
 
     fn format_smart_quotes(&self, content: &str) -> String {
@@ -184,6 +207,24 @@ impl MarkdownFormatter {
     }
 
     fn format_content_once(&self, content: &str) -> Result<String, FormatterError> {
+        // Early return for empty content
+        if content.is_empty() {
+            return Ok(String::new());
+        }
+
+        // Early return for whitespace-only content
+        if content.chars().all(|c| c.is_whitespace()) {
+            return Ok(content.to_string());
+        }
+
+        // Check if configuration is present
+        let config = self.config.as_ref().ok_or_else(|| {
+            FormatterError::ConfigurationError("Configuration is not set.".to_string())
+        })?;
+
+        if !config.enabled {
+            return Ok(content.to_string());
+        }
         let mut result = Vec::new();
         let mut in_code_block = false; // Renamed from in_unformatted_block for clarity
         let mut lines = Vec::new();
@@ -247,12 +288,6 @@ impl MarkdownFormatter {
 
 impl Formatter for MarkdownFormatter {
     fn format_content(&self, content: &str) -> Result<String, FormatterError> {
-        if self.config.is_none() {
-            return Err(FormatterError::ConfigurationError(
-                "No configuration provided".to_string(),
-            ));
-        }
-
         // Early return for empty content
         if content.is_empty() {
             return Ok(String::new());
@@ -260,6 +295,18 @@ impl Formatter for MarkdownFormatter {
 
         // Early return for whitespace-only content
         if content.chars().all(|c| c.is_whitespace()) {
+            return Ok(content.to_string());
+        }
+
+        let config = match &self.config {
+            Some(config) => config,
+            None => {
+                // Return unmodified content if no configuration is present
+                return Ok(content.to_string());
+            }
+        };
+
+        if !config.enabled {
             return Ok(content.to_string());
         }
 
@@ -586,13 +633,8 @@ mod tests {
     #[test]
     fn test_no_configuration() {
         let formatter = MarkdownFormatter::new();
-        let result = formatter.format_content("test");
-        assert!(result.is_err());
-        if let Err(FormatterError::ConfigurationError(msg)) = result {
-            assert_eq!(msg, "No configuration provided");
-        } else {
-            panic!("Expected ConfigurationError");
-        }
+        let result = formatter.format_content("test").unwrap(); // Change to unwrap to get the result
+        assert_eq!(result, "test"); // Expect the original content to be returned
     }
 
     #[test]
