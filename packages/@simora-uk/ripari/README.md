@@ -94,6 +94,7 @@ Ripari provides fine-grained control over Markdown formatting through a configur
 3. **Horizontal Rules** (`remove_horizontal_rules`):
 
    - Removes unnecessary rules outside of code blocks.
+   - "Front Matter" aware - fill retain seperators used to denote front matter in Jekyll blogs
 
 4. **Punctuation** (`punctuation`):
    - Converts em-dashes to hyphens and ellipses to three dots.

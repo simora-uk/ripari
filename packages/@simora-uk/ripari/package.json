@@ -1,6 +1,6 @@
 {
   "name": "@simora-uk/ripari",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "bin": {
     "ripari": "bin/ripari"
   },
