@@ -1,76 +1,83 @@
-use serde::{Deserialize, Serialize};
+
+mod rules {
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct SmartQuotesConfig {
+        pub enabled: bool,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct HeadingsConfig {
+        pub enabled: bool,
+        pub remove_emphasis: bool,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct HorizontalRulesConfig {
+        pub enabled: bool,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct PunctuationConfig {
+        pub enabled: bool,
+        pub standardize_dashes: bool,
+        pub standardize_ellipsis: bool,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct RulesConfig {
+        pub smart_quotes: SmartQuotesConfig,
+        pub headings: HeadingsConfig,
+        pub remove_horizontal_rules: HorizontalRulesConfig,
+        pub punctuation: PunctuationConfig,
+    }
+}
+
+mod types {
+    use serde::{Deserialize, Serialize};
+    use super::rules::RulesConfig;
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct MarkdownFormatterConfig {
+        pub enabled: bool,
+        pub rules: RulesConfig,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct PartialFilesConfiguration {
+        pub ignore: Option<Vec<String>>,
+        pub include: Option<Vec<String>>,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct PartialVcsConfiguration {
+        pub enabled: Option<bool>,
+        pub client_kind: Option<String>,
+        pub use_ignore_file: Option<bool>,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct PartialMarkdownFormatterConfiguration {
+        pub markdown: Option<MarkdownFormatterConfig>,
+        pub files: Option<PartialFilesConfiguration>,
+        pub vcs: Option<PartialVcsConfiguration>,
+        #[serde(default)]
+        pub root: bool,
+    }
+}
+
+pub use rules::{
+    HeadingsConfig, HorizontalRulesConfig, PunctuationConfig, RulesConfig, SmartQuotesConfig,
+};
+pub use types::{
+    MarkdownFormatterConfig, PartialFilesConfiguration, PartialMarkdownFormatterConfiguration,
+    PartialVcsConfiguration,
+};
 
 /// Trait for merging configurations
 pub trait Merge {
     fn merge_with(&mut self, other: Self);
-}
-
-/// Smart quotes rule configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmartQuotesConfig {
-    pub enabled: bool,
-}
-
-/// Headings rule configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct HeadingsConfig {
-    pub enabled: bool,
-    pub remove_emphasis: bool,
-}
-
-/// Horizontal rules configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct HorizontalRulesConfig {
-    pub enabled: bool,
-}
-
-/// Punctuation rule configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct PunctuationConfig {
-    pub enabled: bool,
-    pub standardize_dashes: bool,
-    pub standardize_ellipsis: bool,
-}
-
-/// Rules configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct RulesConfig {
-    pub smart_quotes: SmartQuotesConfig,
-    pub headings: HeadingsConfig,
-    pub remove_horizontal_rules: HorizontalRulesConfig,
-    pub punctuation: PunctuationConfig,
-}
-
-/// Markdown formatter configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct MarkdownFormatterConfig {
-    pub enabled: bool,
-    pub rules: RulesConfig,
-}
-
-/// Main configuration structure
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct PartialMarkdownFormatterConfiguration {
-    pub markdown: Option<MarkdownFormatterConfig>,
-    pub files: Option<PartialFilesConfiguration>,
-    pub vcs: Option<PartialVcsConfiguration>,
-    #[serde(default)]
-    pub root: bool,
-}
-
-/// Files configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct PartialFilesConfiguration {
-    pub ignore: Option<Vec<String>>,
-    pub include: Option<Vec<String>>,
-}
-
-/// VCS configuration
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct PartialVcsConfiguration {
-    pub enabled: Option<bool>,
-    pub client_kind: Option<String>,
-    pub use_ignore_file: Option<bool>,
 }
 
 impl Merge for PartialMarkdownFormatterConfiguration {

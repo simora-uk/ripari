@@ -1,10 +1,7 @@
 use globset;
-use regex;
 use std::fmt;
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::path:: Path;
 use std::str::FromStr;
-use walkdir;
 
 #[derive(Debug, Clone)]
 pub struct Glob {

@@ -6,26 +6,9 @@ use std::str::FromStr;
 use crate::console::Console;
 use crate::diagnostics::CliDiagnostic;
 use crate::workspace::Workspace;
-use simora_configuration::{
-    HeadingsConfig, HorizontalRulesConfig, MarkdownFormatterConfig, PartialFilesConfiguration,
-    PartialMarkdownFormatterConfiguration, PartialVcsConfiguration, PunctuationConfig, RulesConfig,
-    SmartQuotesConfig,
-};
+use simora_configuration:: PartialMarkdownFormatterConfiguration;
 use simora_formatter::{Formatter, MarkdownFormatter};
 use simora_glob::Glob;
-
-pub struct FormatCommandPayload {
-    pub markdown_formatter: Option<MarkdownFormatterConfig>,
-    pub files_configuration: Option<PartialFilesConfiguration>,
-    pub vcs_configuration: Option<PartialVcsConfiguration>,
-    pub stdin_file_path: Option<String>,
-    pub write: bool,
-    pub fix: bool,
-    pub paths: Vec<OsString>,
-    pub staged: bool,
-    pub changed: bool,
-    pub since: Option<String>,
-}
 
 /// Trait for commands that can load editor configuration
 pub trait LoadEditorConfig {
@@ -44,7 +27,6 @@ pub struct FormatCommand {
     pub paths: Vec<OsString>,
     pub stdin_file_path: Option<String>,
     pub show_help: bool,
-    pub formatter_config: PartialMarkdownFormatterConfiguration,
     pub staged: bool,
     pub changed: bool,
     pub since: Option<String>,
@@ -144,7 +126,7 @@ impl FormatCommand {
             paths,
             stdin_file_path,
             show_help: false,
-            formatter_config: PartialMarkdownFormatterConfiguration::default(),
+            // formatter_config: PartialMarkdownFormatterConfiguration::default(),
             staged: false,
             changed: false,
             since: None,

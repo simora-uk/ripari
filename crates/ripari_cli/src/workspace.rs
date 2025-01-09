@@ -1,7 +1,7 @@
 use crate::diagnostics::CliDiagnostic;
 use simora_configuration::{Merge, PartialMarkdownFormatterConfiguration};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path:: PathBuf;
 
 #[derive(Debug, Default)]
 pub struct Workspace {

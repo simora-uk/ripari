@@ -32,7 +32,7 @@ install-tools:
 
 # Task to install necessary development tools
 install:
-  cargo install --path .
+  cargo install --force --path crates/ripari_cli
 
 # Task to generate documentation
 documentation:
