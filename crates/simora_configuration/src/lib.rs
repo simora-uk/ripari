@@ -258,7 +258,7 @@ mod tests {
                         enabled: true,
                         remove_emphasis: true,
                     },
-                    remove_horizontal_rules: HorizontalRulesConfig { enabled: true },
+                    remove_horizontal_rules: HorizontalRulesConfig { enabled: true,  retain_frontmatter_wrappers: true },
                     punctuation: PunctuationConfig {
                         enabled: true,
                         standardize_dashes: true,

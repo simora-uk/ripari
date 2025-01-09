@@ -60,7 +60,10 @@ impl MarkdownFormatter {
                     enabled: true,
                     remove_emphasis: true,
                 },
-                remove_horizontal_rules: HorizontalRulesConfig { enabled: true },
+                remove_horizontal_rules: HorizontalRulesConfig {
+                    enabled: true,
+                    retain_frontmatter_wrappers: true,
+                },
                 punctuation: PunctuationConfig {
                     enabled: true,
                     standardize_dashes: true,
@@ -136,14 +139,41 @@ impl MarkdownFormatter {
                     return content.to_string();
                 }
 
-                // Handle leading horizontal rule
+                // Check for front matter
+                let mut in_frontmatter = false;
+                let mut frontmatter_start = false;
+                let retain_frontmatter = config.rules.remove_horizontal_rules.retain_frontmatter_wrappers;
+
+                // Handle leading horizontal rule (potential front matter start)
                 if !lines.is_empty() && hr_pattern.is_match(lines[0]) {
-                    debug!("Found leading horizontal rule");
-                    result.push(String::new());
-                    prev_was_empty = true;
+                    if retain_frontmatter {
+                        // Only treat it as frontmatter if there's content between the markers
+                        let mut has_content = false;
+                        let mut found_end = false;
+                        for line in lines.iter().skip(1) {
+                            if hr_pattern.is_match(line) {
+                                found_end = true;
+                                break;
+                            }
+                            if !line.trim().is_empty() {
+                                has_content = true;
+                            }
+                        }
+                        if has_content && found_end {
+                            result.push(lines[0].to_string());
+                            in_frontmatter = true;
+                            frontmatter_start = true;
+                        } else {
+                            result.push(String::new());
+                            prev_was_empty = true;
+                        }
+                    } else {
+                        result.push(String::new());
+                        prev_was_empty = true;
+                    }
                 }
 
-                for (i, line) in lines.iter().enumerate() {
+                for (i, line) in lines.iter().enumerate().skip(if frontmatter_start { 1 } else { 0 }) {
                     if line.starts_with("```")
                         || line.starts_with("    ")
                         || line.starts_with("\t")
@@ -154,36 +184,31 @@ impl MarkdownFormatter {
                         prev_was_empty = false;
                     } else if hr_pattern.is_match(line) {
                         debug!("Found horizontal rule: {}", line);
-                        if !in_code_block && !prev_was_empty && i > 0 {
+                        if in_frontmatter {
+                            // This is the end of front matter
+                            if retain_frontmatter {
+                                result.push((*line).to_string());
+                            }
+                            in_frontmatter = false;
+                        } else if !in_code_block && !prev_was_empty && i > 0 {
                             result.push(String::new());
                             prev_was_empty = true;
                         }
-                    } else if line.trim().is_empty() {
-                        if !prev_was_empty {
+                    } else {
+                        if in_frontmatter || !line.trim().is_empty() {
+                            result.push((*line).to_string());
+                            prev_was_empty = false;
+                        } else if !prev_was_empty {
                             result.push((*line).to_string());
                             prev_was_empty = true;
                         }
-                    } else {
-                        result.push((*line).to_string());
-                        prev_was_empty = false;
                     }
                 }
 
-                // Preserve trailing line ending if present
-                if content.ends_with(original_line_ending) && !result.is_empty() {
-                    let last_line = result.last().unwrap();
-                    if !last_line.is_empty() && !hr_pattern.is_match(last_line) {
-                        result.push(String::new());
-                    }
-                }
-
-                result.join(original_line_ending)
-            } else {
-                content.to_string()
+                return result.join(original_line_ending);
             }
-        } else {
-            content.to_string()
         }
+        content.to_string()
     }
 
     fn format_punctuation(&self, content: &str) -> String {
@@ -393,7 +418,10 @@ mod tests {
                         enabled: true,
                         remove_emphasis: true,
                     },
-                    remove_horizontal_rules: HorizontalRulesConfig { enabled: true },
+                    remove_horizontal_rules: HorizontalRulesConfig {
+                        enabled: true,
+                        retain_frontmatter_wrappers: true,
+                    },
                     punctuation: PunctuationConfig {
                         enabled: true,
                         standardize_dashes: true,
@@ -1132,6 +1160,337 @@ Here's a line with "quotes" and a dash-plus an ellipsis...
 
         let input = "Text\n---\nMore text";
         let expected = "Text\n\nMore text";
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_preservation() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        let input = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+# Content
+
+---
+
+## More Content"#;
+
+        let expected = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+# Content
+
+## More Content"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_removal_when_disabled() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = false;
+            markdown.rules.remove_horizontal_rules.enabled = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        let input = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+# Content
+
+---
+
+## More Content"#;
+
+        let expected = r#"
+title: "Test Post"
+date: 2025-01-06
+
+# Content
+
+## More Content"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_with_multiple_horizontal_rules() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        let input = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+# First Section
+
+---
+
+## Second Section
+
+---
+
+### Third Section"#;
+
+        let expected = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+# First Section
+
+## Second Section
+
+### Third Section"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_default_behavior() {
+        let mut formatter = MarkdownFormatter::new();
+        formatter
+            .apply_configuration(&create_test_config())
+            .unwrap();
+
+        // By default, front matter wrappers should be preserved
+        let input = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+# Content"#;
+
+        let expected = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+# Content"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_no_frontmatter_horizontal_rules() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        // When there's no actual front matter content between the markers,
+        // they should be treated as regular horizontal rules
+        let input = r#"---
+
+---
+
+# Content"#;
+
+        let expected = r#"
+# Content"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_with_empty_lines() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        // Front matter with empty lines should still be preserved
+        let input = r#"---
+title: "Test Post"
+
+date: 2025-01-06
+
+categories: [Test]
+---
+
+# Content"#;
+
+        let expected = r#"---
+title: "Test Post"
+
+date: 2025-01-06
+
+categories: [Test]
+---
+
+# Content"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_without_closing_marker() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        // If there's no closing marker, it should be treated as a regular horizontal rule
+        let input = r#"---
+title: "Test Post"
+date: 2025-01-06
+
+# Content"#;
+
+        let expected = r#"
+title: "Test Post"
+date: 2025-01-06
+
+# Content"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_irl() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        // If there's no closing marker, it should be treated as a regular horizontal rule
+        let input = r#"---
+title: "10 Things Developers"
+---
+
+text blog with some text
+
+---
+
+second block of text
+
+---
+
+## 2. Title heading"#;
+
+        let expected = r#"---
+title: "10 Things Developers"
+---
+
+text blog with some text
+
+second block of text
+
+## 2. Title heading"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_with_indented_content() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        // Front matter with indented content should be preserved
+        let input = r#"---
+title: "Test Post"
+metadata:
+    date: 2025-01-06
+    categories:
+        - Test
+        - Example
+---
+
+# Content"#;
+
+        let expected = r#"---
+title: "Test Post"
+metadata:
+    date: 2025-01-06
+    categories:
+        - Test
+        - Example
+---
+
+# Content"#;
+
+        let result = formatter.format_content(input).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_frontmatter_with_code_blocks() {
+        let mut formatter = MarkdownFormatter::new();
+        let mut config = create_test_config();
+        if let Some(ref mut markdown) = config.markdown {
+            markdown.rules.remove_horizontal_rules.retain_frontmatter_wrappers = true;
+        }
+        formatter.apply_configuration(&config).unwrap();
+
+        // Front matter followed by code blocks should work correctly
+        let input = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+```rust
+fn main() {
+    println!("Hello");
+}
+```
+
+---
+
+# Content"#;
+
+        let expected = r#"---
+title: "Test Post"
+date: 2025-01-06
+---
+
+```rust
+fn main() {
+    println!("Hello");
+}
+```
+
+# Content"#;
+
         let result = formatter.format_content(input).unwrap();
         assert_eq!(result, expected);
     }

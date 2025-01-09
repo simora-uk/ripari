@@ -13,7 +13,10 @@ pub struct HeadingsConfig {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct HorizontalRulesConfig {
+    #[serde(default)]
     pub enabled: bool,
+    #[serde(default)]
+    pub retain_frontmatter_wrappers: bool,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
