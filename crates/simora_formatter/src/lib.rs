@@ -7,6 +7,9 @@ use simora_configuration::{
 use std::error::Error;
 use std::fmt;
 
+mod debug;
+pub use debug::set_verbose;
+
 #[derive(Debug)]
 pub enum FormatterError {
     InvalidRule(String),
@@ -74,6 +77,7 @@ impl MarkdownFormatter {
     fn format_smart_quotes(&self, content: &str) -> String {
         if let Some(config) = &self.config {
             if config.rules.smart_quotes.enabled {
+                debug!("Applying smart quotes formatting");
                 // Replace smart quotes with straight quotes
                 content
                     .replace('\u{201c}', "\"") // Left double quote
@@ -91,11 +95,13 @@ impl MarkdownFormatter {
     fn format_headings(&self, content: &str) -> String {
         if let Some(config) = &self.config {
             if config.rules.headings.enabled && config.rules.headings.remove_emphasis {
+                debug!("Applying headings formatting");
                 let heading_pattern = Regex::new(r"^(#+)\s+\*\*(.*?)\*\*$").unwrap();
                 let lines: Vec<String> = content
                     .lines()
                     .map(|line| {
                         if heading_pattern.is_match(line) {
+                            debug!("Found heading to format: {}", line);
                             heading_pattern.replace(line, "$1 $2").to_string()
                         } else {
                             line.to_string()
@@ -114,6 +120,7 @@ impl MarkdownFormatter {
     fn remove_horizontal_rules(&self, content: &str, in_code_block: bool) -> String {
         if let Some(config) = &self.config {
             if config.rules.remove_horizontal_rules.enabled {
+                debug!("Applying horizontal rules formatting");
                 let hr_pattern = Regex::new(r"(?m)^\s*---\s*$").unwrap();
                 let mut result = Vec::new();
                 let mut prev_was_empty = false;
@@ -131,6 +138,7 @@ impl MarkdownFormatter {
 
                 // Handle leading horizontal rule
                 if !lines.is_empty() && hr_pattern.is_match(lines[0]) {
+                    debug!("Found leading horizontal rule");
                     result.push(String::new());
                     prev_was_empty = true;
                 }
@@ -145,6 +153,7 @@ impl MarkdownFormatter {
                         result.push((*line).to_string());
                         prev_was_empty = false;
                     } else if hr_pattern.is_match(line) {
+                        debug!("Found horizontal rule: {}", line);
                         if !in_code_block && !prev_was_empty && i > 0 {
                             result.push(String::new());
                             prev_was_empty = true;
@@ -180,6 +189,7 @@ impl MarkdownFormatter {
     fn format_punctuation(&self, content: &str) -> String {
         if let Some(config) = &self.config {
             if config.rules.punctuation.enabled {
+                debug!("Applying punctuation formatting");
                 let mut result = content.to_string();
 
                 if config.rules.punctuation.standardize_dashes {
@@ -225,8 +235,10 @@ impl MarkdownFormatter {
         if !config.enabled {
             return Ok(content.to_string());
         }
+
+        debug!("\nStarting format_content_once");
         let mut result = Vec::new();
-        let mut in_code_block = false; // Renamed from in_unformatted_block for clarity
+        let mut in_code_block = false;
         let mut lines = Vec::new();
         let mut current_line = String::new();
 
@@ -251,24 +263,28 @@ impl MarkdownFormatter {
         for (i, (line, ending)) in lines.iter().enumerate() {
             // Toggle code block state
             if Self::is_unformatted_block_start(line) {
+                debug!("Found code block start: {}", line);
                 result.push(format!("{}{}", line, ending));
                 in_code_block = !in_code_block;
                 continue;
             }
 
             if in_code_block {
+                debug!("In code block, preserving line: {}", line);
                 result.push(format!("{}{}", line, ending));
                 continue;
             }
 
             // Handle blockquotes line by line
             if line.starts_with(">") {
+                debug!("Found blockquote: {}", line);
                 result.push(format!("{}{}", line, ending));
                 continue;
             }
 
             // Apply formatting to regular content
             let mut formatted = line.to_string();
+            debug!("Formatting line: {}", line);
             formatted = self.format_punctuation(&formatted);
             formatted = self.format_smart_quotes(&formatted);
             formatted = self.format_headings(&formatted);
@@ -279,9 +295,11 @@ impl MarkdownFormatter {
 
         // Only apply horizontal rule processing if not in a code block
         if !in_code_block {
+            debug!("Applying horizontal rule processing");
             content = self.remove_horizontal_rules(&content, in_code_block);
         }
 
+        debug!("Finished format_content_once");
         Ok(content)
     }
 }
@@ -302,13 +320,23 @@ impl Formatter for MarkdownFormatter {
             Some(config) => config,
             None => {
                 // Return unmodified content if no configuration is present
+                debug!("No configuration present!");
                 return Ok(content.to_string());
             }
         };
 
         if !config.enabled {
+            debug!("Formatter is disabled!");
             return Ok(content.to_string());
         }
+
+        debug!("Formatter configuration:");
+        debug!("  Smart quotes enabled: {}", config.rules.smart_quotes.enabled);
+        debug!("  Headings enabled: {}", config.rules.headings.enabled);
+        debug!("  Remove horizontal rules enabled: {}", config.rules.remove_horizontal_rules.enabled);
+        debug!("  Punctuation enabled: {}", config.rules.punctuation.enabled);
+        debug!("  Standardize dashes: {}", config.rules.punctuation.standardize_dashes);
+        debug!("  Standardize ellipsis: {}", config.rules.punctuation.standardize_ellipsis);
 
         let mut current = content.to_string();
         let mut previous;

@@ -26,6 +26,7 @@ impl SimoraCommand {
             "format" => {
                 let mut write = false;
                 let mut fix = false;
+                let mut verbose = false;
                 let mut paths = Vec::new();
                 let mut stdin_file_path = None;
 
@@ -37,6 +38,9 @@ impl SimoraCommand {
                         }
                         "--fix" => {
                             fix = true;
+                        }
+                        "--verbose" => {
+                            verbose = true;
                         }
                         "--stdin-file-path" => {
                             if i + 1 < args.len() {
@@ -62,6 +66,7 @@ impl SimoraCommand {
                     fix,
                     paths,
                     stdin_file_path,
+                    verbose,
                 )))
             }
             _ => Ok(SimoraCommand::Format(format::FormatCommand::with_help())),

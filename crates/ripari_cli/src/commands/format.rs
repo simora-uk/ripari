@@ -30,6 +30,7 @@ pub struct FormatCommand {
     pub staged: bool,
     pub changed: bool,
     pub since: Option<String>,
+    pub verbose: bool,
 }
 
 impl LoadEditorConfig for FormatCommand {
@@ -47,19 +48,16 @@ impl CommandRunner for FormatCommand {
             return Ok(());
         }
 
-        // Load configuration
-        let config = self.load_editor_config()?;
+        // Set verbose mode
+        simora_formatter::set_verbose(self.verbose);
 
         console.log(&format!(
             "Formatting files in workspace: {:?}",
             workspace.root()
         ));
 
-        // Create formatter
+        // Create formatter with global config
         let mut formatter = MarkdownFormatter::new();
-        formatter
-            .apply_configuration(&config)
-            .map_err(|e| CliDiagnostic::error(format!("Failed to apply configuration: {}", e)))?;
 
         // Process files based on VCS configuration if applicable
         let file_paths = if self.changed || self.staged || self.since.is_some() {
@@ -119,6 +117,7 @@ impl FormatCommand {
         fix: bool,
         paths: Vec<OsString>,
         stdin_file_path: Option<String>,
+        verbose: bool,
     ) -> Self {
         Self {
             write,
@@ -126,10 +125,10 @@ impl FormatCommand {
             paths,
             stdin_file_path,
             show_help: false,
-            // formatter_config: PartialMarkdownFormatterConfiguration::default(),
             staged: false,
             changed: false,
             since: None,
+            verbose,
         }
     }
 
@@ -158,15 +157,47 @@ impl FormatCommand {
         let content = fs::read_to_string(path)
             .map_err(|e| CliDiagnostic::error(format!("Failed to read file {:?}: {}", path, e)))?;
 
+        console.log(&format!("Processing file: {:?}", path));
+        console.log(&format!("Original content length: {}", content.len()));
+
         let formatted = formatter.format_content(&content).map_err(|e| {
             CliDiagnostic::error(format!("Failed to format file {:?}: {}", path, e))
         })?;
 
+        console.log(&format!("Formatted content length: {}", formatted.len()));
+
+        if content == formatted {
+            console.log("Content is identical after formatting");
+        } else {
+            console.log("Content has changed after formatting");
+            // Print first difference
+            for (i, (original, formatted)) in content.chars().zip(formatted.chars()).enumerate() {
+                if original != formatted {
+                    console.log(&format!(
+                        "First difference at position {}: original '{}' vs formatted '{}'",
+                        i, original, formatted
+                    ));
+                    break;
+                }
+            }
+        }
+
         if self.write || self.fix {
-            fs::write(path, formatted).map_err(|e| {
-                CliDiagnostic::error(format!("Failed to write file {:?}: {}", path, e))
-            })?;
-            console.log(&format!("Formatted {:?}", path));
+            if content != formatted {
+                match fs::write(path, &formatted) {
+                    Ok(_) => {
+                        console.log(&format!("Formatted {:?}", path));
+                    }
+                    Err(e) => {
+                        return Err(CliDiagnostic::error(format!(
+                            "Failed to write file {:?}: {}. Please check file permissions.",
+                            path, e
+                        )));
+                    }
+                }
+            } else {
+                console.log(&format!("No changes needed for {:?}", path));
+            }
         } else {
             console.log(&formatted);
         }
@@ -186,6 +217,7 @@ impl FormatCommand {
         console.log("        --stdin-file-path=PATH Use this option when you want to format code");
         console
             .log("                              piped from stdin, and print the output to stdout");
+        console.log("        --verbose             Show detailed debug information");
         console.log("");
         console.log("Available positional items:");
         console.log("    PATH                      Single file, single path or list of paths");
